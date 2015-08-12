@@ -12,5 +12,10 @@
             "name": "Pavel Belik",
             "email": "razvanlomov@gmail.com"
         }
-    ]
+    ],
+    "autoload": {
+        "files":[
+            "Liw.php"
+        ]
+    }
 }
