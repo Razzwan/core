@@ -1,0 +1,16 @@
+{
+    "name": "liw/liw",
+    "description": "The Liw Framework.",
+    "keywords": ["framework", "liw"],
+    "license": "MIT",
+    "homepage": "http://mira-planet.tk",
+    "support": {
+        "issues": "razvanlomov@gmail.com"
+    },
+    "authors": [
+        {
+            "name": "Pavel Belik",
+            "email": "razvanlomov@gmail.com"
+        }
+    ]
+}
