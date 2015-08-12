@@ -1,11 +1,11 @@
 {
     "name": "liw/core",
-    "description": "The Liw Framework.",
+    "description": "The Liw Framework",
     "keywords": ["framework", "liw"],
     "license": "MIT",
-    "homepage": "http://mira-planet.tk",
+    "homepage": "https://github.com/Razzwan/core",
     "support": {
-        "issues": "http://mira-planet.tk"
+        "issues": "https://github.com/Razzwan/core/issues"
     },
     "authors": [
         {
