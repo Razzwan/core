@@ -4,6 +4,7 @@
     "keywords": ["framework", "liw"],
     "license": "MIT",
     "homepage": "https://github.com/Razzwan/core",
+    "minimum-stability": "dev",
     "support": {
         "issues": "https://github.com/Razzwan/core/issues"
     },
