@@ -65,7 +65,7 @@ class SmartRouter
         Liw::$user['levels'] = $levels;
         $arr = [];
         for ($i=1; $i<=$levels[0]; $i++){
-            $add_arr = include __DIR__ ."/../config/ways/article/" . $i .".php";
+            $add_arr = include LIW_WEB ."config/ways/article/" . $i .".php";
             $arr = array_merge($arr, $add_arr);
         }
         return $arr;
