@@ -4,7 +4,7 @@ namespace liw\core;
 use liw\core\base\validation\Clean;
 
 /**
- * Выбирает все допустимые маршруты
+ * РљР»Р°СЃСЃ РѕС‚РІРµС‡Р°РµС‚ Р·Р° РјР°СЂС€СЂСѓС‚РёР·Р°С†РёСЋ
  * Class SmartRouter
  * @package liw\core
  */
