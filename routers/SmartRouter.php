@@ -1,6 +1,7 @@
 <?php
-namespace liw\core;
+namespace liw\core\routers;
 
+use liw\core\Liw;
 use liw\core\validation\Clean;
 
 /**
