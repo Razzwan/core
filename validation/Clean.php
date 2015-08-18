@@ -1,5 +1,5 @@
 <?php
-namespace liw\core\base\validation;
+namespace liw\core\validation;
 
 /**
  * Статичный класс используется для проверки пользовательского ввода

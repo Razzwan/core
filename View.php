@@ -85,7 +85,7 @@ class View
              * Добавляем панель разработчика, если выставлен соответствующий флаг
              */
             if(defined('DEVELOP') && DEVELOP === true){
-                include __DIR__ . '/base/view/develop_panel.php';
+                include __DIR__ . '/develop/view/develop_panel.php';
             }
             include $this->view_path;
         }else{

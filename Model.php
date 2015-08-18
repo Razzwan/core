@@ -1,9 +1,8 @@
 <?php
 namespace liw\core;
 
-use liw\core\base\model\BaseModel;
-use liw\core\base\model\Connect;
-use liw\core\Liw;
+use liw\core\model\BaseModel;
+use liw\core\model\Connect;
 
 class Model extends BaseModel
 {

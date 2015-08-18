@@ -1,5 +1,5 @@
 <?php
-namespace liw\core\base\model;
+namespace liw\core\model;
 
 use liw\core\Liw;
 

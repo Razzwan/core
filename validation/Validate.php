@@ -1,5 +1,5 @@
 <?php
-namespace liw\core\base\validation;
+namespace liw\core\validation;
 
 use liw\core\Liw;
 

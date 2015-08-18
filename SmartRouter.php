@@ -1,7 +1,7 @@
 <?php
 namespace liw\core;
 
-use liw\core\base\validation\Clean;
+use liw\core\validation\Clean;
 
 /**
  * Класс отвечает за маршрутизацию

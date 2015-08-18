@@ -1,29 +1,29 @@
 <?php
-namespace liw\core\base\model;
+namespace liw\core\model;
 
 use liw\core\Liw;
 
 class BaseModel
 {
     /**
-     * Ассоциативный массив полей и значений модели
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
      * @var array
      */
     public $fields = [];
 
     /**
-     * Массив лэйблов для названия полей модели
+     * пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
      */
     public function labelFields(){return[];}
 
     /**
-     * Текст ошибки, если она произошла, или false, в случае ее отсутствия
+     * пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ false, пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
      * @var
      */
     public $error = false;
 
     /**
-     * Правила для полей в таблице
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
      * @inheritdoc
      */
     public function rules()
@@ -32,15 +32,15 @@ class BaseModel
     }
 
     /**
-     * Присваиваем $this->error текст ошибки
-     * @return bool истина в случае успешной валидации, ложь - в случае ошибки
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ $this->error пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+     * @return bool пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ - пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
      */
     public function validate(){
         foreach ($this->rules() as $field => $arrRules){
             if(in_array($field, array_keys($this->fields))){
                 foreach($arrRules as $key => $value){
                     if(is_int($value)){
-                        if($this->error = call_user_func('liw\core\base\validation\Validate::' . $key, $this->fields[$field], $value)){
+                        if($this->error = call_user_func('liw\core\validation\Validate::' . $key, $this->fields[$field], $value)){
                             $this->error = Liw::$lang['error']['field'] . is_null($this->labelFields()[$field]) . $this->error;
                             return false;
                         }
@@ -51,7 +51,7 @@ class BaseModel
                                 return false;
                             }
                         }else{
-                            if($this->error = call_user_func('liw\core\base\validation\Validate::' . $value, $this->fields[$field])){
+                            if($this->error = call_user_func('liw\core\validation\Validate::' . $value, $this->fields[$field])){
                                 $this->error = Liw::$lang['error']['field'] . $this->labelFields()[$field] . $this->error;
                                 return false;
                             }
@@ -64,7 +64,7 @@ class BaseModel
     }
 
     /**
-     * Производит валидацию массива пост и присваивает свойству $fields данные из массива $_POST,
+     * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ $fields пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ $_POST,
      *
      * @param  array
      * @return mixed
@@ -77,7 +77,7 @@ class BaseModel
                      $this->fields[$key] = $value;
                 }
             }
-            return $this->validate(); //возвращает истину в случае успешной валидации, иначе - ложь
+            return $this->validate(); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅ
         }
         return false;
     }
