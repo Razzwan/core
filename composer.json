@@ -2,6 +2,7 @@
     "name": "liw/core",
     "description": "The Liw Framework",
     "version":"1.0.0",
+    "type": "library",
     "keywords": ["framework", "liw"],
     "license": "MIT",
     "homepage": "https://github.com/Razzwan/core",
