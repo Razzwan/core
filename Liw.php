@@ -43,9 +43,9 @@ class Liw
 
 }
 
-require LIW_CORE . '/core/Psr4AutoloaderClass.php'; //Подключение файла автозагрузки
+require LIW_CORE . '/core/Loader.php'; //Подключение файла автозагрузки
 
 /**
  * Регистрация автозагрузчика
  */
-(new Psr4AutoloaderClass)->register();
+(new Loader())->register();
