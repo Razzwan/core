@@ -27,9 +27,9 @@ class SmartRouter
      */
     static public function getRoute(){
         if(!Liw::$user['login']){
-            self::$ways = include LIW_WEB . "/config/ways/guest.php";
+            self::$ways = include LIW_WEB . "config/ways/guest.php";
         }else{
-            self::$ways = include LIW_WEB . "/config/ways/login.php";
+            self::$ways = include LIW_WEB . "config/ways/login.php";
             if(!empty($_SESSION['user']['levels'])){
                 self::$ways = array_merge(self::$ways, self::filesFromLevels());
             }
@@ -66,7 +66,7 @@ class SmartRouter
         Liw::$user['levels'] = $levels;
         $arr = [];
         for ($i=1; $i<=$levels[0]; $i++){
-            $add_arr = include LIW_WEB ."/config/ways/article/" . $i .".php";
+            $add_arr = include LIW_WEB ."config/ways/article/" . $i .".php";
             $arr = array_merge($arr, $add_arr);
         }
         return $arr;

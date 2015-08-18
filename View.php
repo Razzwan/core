@@ -74,7 +74,7 @@ class View
     public function render($folder, $view, $attr = null)
     {
         ob_start();
-        $this->view_path = LIW_WEB . '/views/' . $folder . '/' . $view . '.php';
+        $this->view_path = LIW_WEB . 'views/' . $folder . '/' . $view . '.php';
         if(is_file($this->view_path)){
             $this->view_folder = $folder;
             if(isset($attr) && is_array($attr)){
@@ -92,13 +92,13 @@ class View
             throw new \Exception('File: ' . $this->view_path . ' not exist!');
         }
         $this->view =  ob_get_clean();
-        require LIW_WEB . '/views/layouts/' . Liw::$config['def_layout'] . '.php'; //подключение layout
+        require LIW_WEB . 'views/layouts/' . Liw::$config['def_layout'] . '.php'; //подключение layout
         exit;
     }
 
     public function showBlock($view, $attr = null)
     {
-        $this->view_path = LIW_WEB . '/views/' . $this->view_folder . '/' . $view . '.php';
+        $this->view_path = LIW_WEB . 'views/' . $this->view_folder . '/' . $view . '.php';
         if(is_file($this->view_path)){
             if(isset($attr) && is_array($attr)){
                 extract($attr, EXTR_OVERWRITE);

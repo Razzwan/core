@@ -22,14 +22,14 @@ class App
     private function loadLanguage()
     {
         if(!empty($_SESSION['language'])){
-            $file_path = LIW_WEB . '/config/languages/' . $_SESSION['language'] . '.php';
+            $file_path = LIW_WEB . 'config/languages/' . $_SESSION['language'] . '.php';
             if(file_exists($file_path)){
                 Liw::$lang = require $file_path;
                 return;
             }
         }
         if(isset($_SESSION['language'])) unset($_SESSION['language']);
-        Liw::$lang = require LIW_WEB . '/config/languages/' . Liw::$config['def_lang'] . '.php';
+        Liw::$lang = require LIW_WEB . 'config/languages/' . Liw::$config['def_lang'] . '.php';
 
     }
 
@@ -59,7 +59,7 @@ class App
             }
 
             if(!empty($this->lcaa['language'])){
-                $file_path = LIW_WEB . '/config/languages/' . $this->lcaa['language'] . '.php';
+                $file_path = LIW_WEB . 'config/languages/' . $this->lcaa['language'] . '.php';
                 if(file_exists($file_path)){
                     $_SESSION['language'] = $this->lcaa['language'];
                     Liw::$lang = require $file_path;
