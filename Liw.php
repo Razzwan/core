@@ -9,7 +9,7 @@ if(defined('DEVELOP') && DEVELOP === true){
     /**
      * @const timestamp , Константа начала выполнения скрипта
      */
-    define("TIME", microtime(true));
+    defined("TIME") or define("TIME", microtime(true));
 
     /**
      * В режиме отладки должны отображаться все ошибки
@@ -21,7 +21,7 @@ if(defined('DEVELOP') && DEVELOP === true){
 /**
  * @const string PATH     корень liw каталога
  */
-define('LIW_CORE', dirname(__DIR__) . DIRECTORY_SEPARATOR );
+defined("LIW_CORE") or define("LIW_CORE", dirname(__DIR__) . DIRECTORY_SEPARATOR );
 
 /**
  * Class Liw
@@ -35,11 +35,6 @@ class Liw
     static public $lang   = [];
 
     static public $user = ['login'=>false];
-
-    static public $dev = [
-        'classes'  => [],
-        'requests' => [],
-    ];
 
 }
 

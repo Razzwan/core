@@ -74,7 +74,7 @@ class View
     public function render($folder, $view, $attr = null)
     {
         ob_start();
-        $this->view_path = LIW_WEB . 'views/' . $folder . '/' . $view . '.php';
+        $this->view_path = LIW_WEB . '/views/' . $folder . '/' . $view . '.php';
         if(is_file($this->view_path)){
             $this->view_folder = $folder;
             if(isset($attr) && is_array($attr)){
@@ -92,13 +92,13 @@ class View
             throw new \Exception('File: ' . $this->view_path . ' not exist!');
         }
         $this->view =  ob_get_clean();
-        require LIW_WEB . 'views/layouts/' . Liw::$config['def_layout'] . '.php'; //подключение layout
+        require LIW_WEB . '/views/layouts/' . Liw::$config['def_layout'] . '.php'; //подключение layout
         exit;
     }
 
     public function showBlock($view, $attr = null)
     {
-        $this->view_path = LIW_WEB . 'views/' . $this->view_folder . '/' . $view . '.php';
+        $this->view_path = LIW_WEB . '/views/' . $this->view_folder . '/' . $view . '.php';
         if(is_file($this->view_path)){
             if(isset($attr) && is_array($attr)){
                 extract($attr, EXTR_OVERWRITE);
@@ -111,68 +111,5 @@ class View
             throw new \Exception('File: ' . $this->view_path . ' not exist!');
         }
     }
-
-    /**
-     * @param $view
-     * @param array $attr
-     * @throws \Exception
-     */
-    /*public function show($view, $attr = null)
-    {
-        $this->showAttributes = $attr;
-        if(ob_get_length()) ob_end_clean();
-        ob_start();
-        if(isset($attr) && is_array($attr)) {
-            extract($attr, EXTR_OVERWRITE);
-        }
-        $this->view_path = LIW_WEB . 'views/' . $this->view_folder . '/' . $view . '.php';
-
-        /**
-         * Добавляем панель разработчика, если выставлен соответствующий флаг
-         */
-        /*if(defined('DEVELOP') && DEVELOP === true){
-            include __DIR__ . '/base/view/develop_panel.php';
-        }
-
-        if(is_file($this->view_path)){
-            include $this->view_path;
-        }else{
-            throw new \Exception('File: ' . $this->view_path . ' not exist!');
-        }
-
-        $this->view = ob_get_clean();
-        require LIW_WEB . 'views/layouts/' . Liw::$config['def_layout'] . '.php'; //подключение layout
-    }*/
-
-    /**
-     * @param $controller
-     * @param $view
-     * @param null $attr
-     * @throws \Exception
-     */
-    /*public function redirect($controller, $view, $attr = null)
-    {
-        if(ob_get_length()) ob_end_clean();
-        ob_start();
-
-        /**
-         * Добавляем панель разработчика, если выставлен соответствующий флаг
-         */
-        /*if(defined('DEVELOP') && DEVELOP === true){
-            include __DIR__ . '/base/view/develop_panel.php';
-        }
-
-        if(isset($attr) && is_array($attr)){
-            extract($attr, EXTR_OVERWRITE);
-        }
-        $this->view_path = LIW_WEB . 'views/' . $controller . '/' . $view . '.php';
-        if(is_file($this->view_path)){
-            require $this->view_path;
-        }else{
-            throw new \Exception('File: ' . $this->view_path . ' not exist!');
-        }
-        $this->view =  ob_get_clean();
-        require LIW_WEB . 'views/layouts/' . Liw::$config['def_layout'] . '.php'; //подключение layout
-    }*/
 
 }
