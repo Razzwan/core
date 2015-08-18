@@ -6,8 +6,6 @@ use liw\core\routers\SmartRouter;
 class App
 {
     /**
-     * ������������� ������, �������� ���������� � �����, �����������, ����� � ���������, ��������� � url,
-     * ���� ����������� ����������� ��� ���������� �� $_SESSION, ���� � url ���������� ���
      * @var array
      */
     private $lcaa = [
@@ -19,7 +17,7 @@ class App
 
 
     /**
-     * �������� �����
+     * Загрузка языка
      */
     private function loadLanguage()
     {
@@ -36,17 +34,17 @@ class App
     }
 
     /**
-     * ������ ����������
+     * запуск приложения
      * @param $config
      */
     public function start($config){
         try {
-            // �������� ���������� ������
+            // изменение отображения ошибко по умолчанию
             set_error_handler([$this, 'show_errors']);
 
             session_start();
             session_name('liw');
-            // ��������� ������ � ���������� ����������
+
             Liw::$config = $config;
             $this->loadLanguage();
 
@@ -54,17 +52,12 @@ class App
                 Liw::$user['login'] = true;
             }
 
-            /**
-             * �������� ������������� ������ � ������, ������������, ������ � ���������� �� �������
-             */
-            //$this->lcaa = Router::arr_FromUrl(); //������� ������
             if(SmartRouter::getRoute()){
                 $this->lcaa = array_merge($this->lcaa, SmartRouter::getRoute());
             } else {
                 throw new \Exception("No route: " . $_SERVER['REQUEST_URI']);
             }
 
-            //���������� ����� � ������
             if(!empty($this->lcaa['language'])){
                 $file_path = LIW_WEB . '/config/languages/' . $this->lcaa['language'] . '.php';
                 if(file_exists($file_path)){
@@ -98,18 +91,12 @@ class App
         }
 
         /**
-         * ���� ���������� �����-���������� ����������, �� ������� ��� ������ �
-         * �������� �����-��������(���), ��������� � ���� ��������
-         *
-         * ���� ���������� �������� �� ����������, �� ����� ������� �������� �� ��������,
-         * �������� � �����������, ���� � ����������� �� ������ �������� ��-���������,
-         * �� ����� ��������� �������� index, ���� ��� �����������, �� ����� ������
+         * запускает метод контроллера с параметрами
          */
         call_user_func_array([$controller_obj, $this->lcaa['action'] . 'Action'], $attributes);
     }
 
     /**
-     * ����� ������� ������� ������
      * @param $errno integer
      * @param $errstr string
      * @param $file string
