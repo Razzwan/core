@@ -87,7 +87,9 @@ class App
         $controller_obj = new $controller_route();
         $this->lcaa['action'] = $action ?: $controller_obj->default_action;
         if (!method_exists($controller_obj, $this->lcaa['action'] . 'Action')) {
-            throw new \Exception(Liw::$lang['message']['no_action'] . $this->lcaa['action']);
+            throw new \Exception(Liw::$lang['message']['no_action'] .
+                '<strong>' .$this->lcaa['action'] . '</strong> in controller <strong>' .
+                $this->lcaa['controller'] . '</strong>');
         }
 
         /**

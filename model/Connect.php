@@ -1,6 +1,7 @@
 <?php
 namespace liw\core\model;
 
+use liw\core\develop\Dev;
 use liw\core\Liw;
 
 class Connect
@@ -69,7 +70,7 @@ class Connect
     public function get($sql, $type_param = null, array $param = null)
     {
         if(defined("DEVELOP") && DEVELOP===true){
-            Liw::$dev['requests'][]=$sql;
+            Dev::$dev['requests'][]=$sql;
         }
         if(!empty($param) && !empty($type_param)){
             array_unshift($param, $type_param);
@@ -105,7 +106,7 @@ class Connect
     public function push($sql, $type_param = null, array $param = null)
     {
         if(defined("DEVELOP") && DEVELOP===true){
-            Liw::$dev['requests'][]=$sql;
+            Dev::$dev['requests'][]=$sql;
         }
         if(isset($param) && isset($type_param)){
             array_unshift($param, $type_param);
