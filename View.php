@@ -61,7 +61,7 @@ class View
     /**
      * запрет клонирования
      */
-    private function __clone(){}
+    //private function __clone(){}
 
     public static function getView()
     {
@@ -74,7 +74,7 @@ class View
     public function render($folder, $view, $attr = null)
     {
         ob_start();
-        $this->view_path = LIW_WEB . 'views/' . $folder . '/' . $view . '.php';
+        $this->view_path = LIW_WEB . 'views' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $view . '.php';
         if(is_file($this->view_path)){
             $this->view_folder = $folder;
             if(isset($attr) && is_array($attr)){

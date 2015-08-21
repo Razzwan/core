@@ -7,11 +7,6 @@ namespace liw\core;
 
 if(defined('DEVELOP') && DEVELOP === true){
     /**
-     * @const timestamp , Константа начала выполнения скрипта
-     */
-    defined("TIME") or define("TIME", microtime(true));
-
-    /**
      * В режиме отладки должны отображаться все ошибки
      */
     error_reporting (E_ALL);
@@ -34,7 +29,9 @@ class Liw
 
     static public $lang   = [];
 
-    static public $user = ['login'=>false];
+    static public $isGuest = true;
+
+    static public $user = [];
 
 }
 

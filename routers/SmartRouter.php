@@ -26,7 +26,7 @@ class SmartRouter
      * @throws \Exception
      */
     static public function getRoute(){
-        if(!Liw::$user['login']){
+        if(Liw::$isGuest){
             self::$ways = include LIW_WEB . "config/ways/guest.php";
         }else{
             self::$ways = include LIW_WEB . "config/ways/login.php";

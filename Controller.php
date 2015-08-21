@@ -37,7 +37,7 @@ class Controller
             $this->afterAction();
             return;
         }
-        header('Location: '. Liw::$config['domain'] . $action);
+        header('Location: ' . $action);
     }
 
     public function afterAction(){}

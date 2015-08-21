@@ -38,22 +38,22 @@ class App
      * @param $config
      */
     public function start($config){
-        try {
-            // изменение отображения ошибко по умолчанию
-            set_error_handler([$this, 'show_errors']);
+        set_error_handler([$this, 'show_errors']);
+        Liw::$config = $config;
+        // изменение отображения ошибок по умолчанию
 
+        try {
             session_start();
             session_name('liw');
 
-            Liw::$config = $config;
             $this->loadLanguage();
 
             if (isset($_SESSION['user']) && !empty($_SESSION['user']['login'])){
-                Liw::$user['login'] = true;
+                Liw::$isGuest = false;
             }
 
-            if(SmartRouter::getRoute()){
-                $this->lcaa = array_merge($this->lcaa, SmartRouter::getRoute());
+            if(($way = SmartRouter::getRoute())){
+                $this->lcaa = array_merge($this->lcaa, $way);
             } else {
                 throw new \Exception("No route: " . $_SERVER['REQUEST_URI']);
             }
@@ -99,10 +99,11 @@ class App
     }
 
     /**
-     * @param $errno integer
-     * @param $errstr string
-     * @param $file string
-     * @param $line integer
+     * @param int $errno
+     * @param string $errstr
+     * @param string $file
+     * @param int $line
+     * @throws \Exception
      */
     public function show_errors($errno, $errstr, $file, $line)
     {
