@@ -73,6 +73,9 @@ class View
 
     public function render($folder, $view, $attr = null)
     {
+        if(!empty(ob_get_clean())){
+            ob_end_clean();
+        }
         ob_start();
         $this->view_path = LIW_WEB . 'views' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $view . '.php';
         if(is_file($this->view_path)){

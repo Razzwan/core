@@ -43,8 +43,8 @@ class App
         // изменение отображения ошибок по умолчанию
 
         try {
-            session_start();
             session_name('liw');
+            session_start();
 
             $this->loadLanguage();
 

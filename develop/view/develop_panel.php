@@ -2,9 +2,6 @@
 use liw\core\Liw;
 use liw\core\develop\Dev;
 ?>
-
-<div id="develop_button">Time:<?=' ' . sprintf("%d", (microtime(true)-$_SERVER["REQUEST_TIME_FLOAT"])*1000) . 'ms';?></div>
-
 <div id="develop" toggle="false">
     <div id="show_classes">
         <?php
