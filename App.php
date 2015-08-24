@@ -29,8 +29,8 @@ class App
             }
         }
         if(isset($_SESSION['language'])) unset($_SESSION['language']);
-        Liw::$lang = require LIW_WEB . 'config/languages/' . Liw::$config['def_lang'] . '.php';
-
+        $file_path = LIW_WEB . 'config/languages/' . Liw::$config['def_lang'] . '.php';
+        Liw::$lang = require $file_path;
     }
 
     /**

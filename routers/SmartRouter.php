@@ -36,7 +36,7 @@ class SmartRouter
         }
 
         $arr = explode('?', Clean::url($_SERVER['REQUEST_URI']));
-        self::$route = array_shift($arr);
+        self::$route = Liw::$request = array_shift($arr);
 
         foreach(explode('/', self::$route) as $str){
             if(strlen($str)==2){
