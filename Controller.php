@@ -9,8 +9,6 @@ class Controller
      */
     public $default_action = 'index';
 
-    public function beforeAction(){}
-
     /**
      * Запускает генерацию страницы
      * @param $view
@@ -19,9 +17,10 @@ class Controller
      */
     public function render($view, $attributes = null)
     {
-        $this->beforeAction();
         View::getView()->render($this->getClassFromPath(), $view, $attributes);
-        $this->afterAction();
+        if(method_exists($this,'afterRender')){
+            call_user_func([$this, "afterRender"]);
+        }
     }
 
     /**
@@ -32,16 +31,12 @@ class Controller
      */
     public function redirect($action, $attr = null){
         if(is_array($action)){
-            $this->beforeAction();
             View::getView()->render($action[0],$action[1], $attr);
             $this->afterAction();
             return;
         }
         header('Location: ' . $action);
     }
-
-    public function afterAction(){}
-
 
     /**
      * Возвращает название класса, бъект которого создается

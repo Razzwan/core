@@ -86,7 +86,7 @@ class App
         }
         $controller_obj = new $controller_route();
         $this->lcaa['action'] = $action ?: $controller_obj->default_action;
-        if (!method_exists($controller_obj, ($meth = $this->lcaa['action'] . 'Action'))) {
+        if (!method_exists($controller_obj, $this->lcaa['action'] . 'Action')) {
             throw new \Exception(Liw::$lang['message']['no_action'] .
                 '<strong>' .$this->lcaa['action'] . '</strong> in controller <strong>' .
                 $this->lcaa['controller'] . '</strong>');
@@ -95,7 +95,13 @@ class App
         /**
          * запускает метод контроллера с параметрами
          */
+        if(method_exists($controller_obj, "before")){//method before action
+            call_user_func_array([$controller_obj, "before"], $attributes);
+        }
         call_user_func_array([$controller_obj, $this->lcaa['action'] . 'Action'], $attributes);
+        if(method_exists($controller_obj, "after")){//method after action
+            call_user_func_array([$controller_obj, "after"], $attributes);
+        }
     }
 
     /**
@@ -118,5 +124,6 @@ class App
                 'error' => $message
             ]);
         }
+        exit;
     }
 }

@@ -73,7 +73,7 @@ class View
 
     public function render($folder, $view, $attr = null)
     {
-        if(!empty(ob_get_clean())){
+        if(!empty(ob_get_contents())){
             ob_end_clean();
         }
         ob_start();
@@ -96,7 +96,6 @@ class View
         }
         $this->view =  ob_get_clean();
         require LIW_WEB . 'views/layouts/' . Liw::$config['def_layout'] . '.php'; //подключение layout
-        exit;
     }
 
     public function showBlock($view, $attr = null)
