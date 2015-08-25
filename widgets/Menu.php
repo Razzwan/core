@@ -34,57 +34,63 @@ class Menu
         </nav>
                     ';
 
+    static private $widgetSettings;
+
     /**
-     * Генерирует разметку меню
-     * @param $arr
+     * @param $widgetSettings
      * @return string
      */
-    static public function init($arr)
+    static public function init($widgetSettings)
     {
-        if(is_array($arr)){
-            if(!empty($arr['items'])){
-                $html = '<ul ' . self::getOptions($arr['options']) . '>';
-                foreach($arr['items'] as $item){
-                    $html .= self::getLi($item['url'], $item['label']);
+        if(is_array($widgetSettings)){
+            if($widgetSettings['items'] !== null){
+                $html = '<ul ' . self::renderOptions($widgetSettings['options']) . '>';
+                foreach($widgetSettings['items'] as $item){
+                    if(!isset($item['items'])){
+                        $html .= self::renderItem($item['url'], $item['label']);
+                    } else {
+                        $html .= self::renderItems($item['url'], $item['label'], $item['items'], $item['options']);
+                    }
+
                 }
                 return $html . "</ul>";
             }
         }
+        return '';
     }
 
-    static private function getOptions($options)
+    static private function renderOptions($options = null)
     {
+        if($options === null){
+            return '';
+        }
         $html = '';
-        foreach($options as $option=>$value){
-            $html .= "{$option} = '{$value}'";
+        foreach($options as $option => $value){
+            $html .= "{$option} = '{$value}' ";
         }
         return $html;
     }
 
-    static private function getLi($url, $label, $items = null, $options = null){
-        if ($items === null){
+    static private function renderItem($url, $label)
+    {
+        return "<li class = '" . self::isActive($url) . "'><a href = '{$url}'>{$label}</a></li>";
+    }
 
-            return "<li " . self::isActive($url) . "><a href = '{$url}'>{$label}</a></li>";
-
-        } else {
-
-            return "<li class = 'dropdown'>
-                        <a href = '{$url}'" . self::getOptions($options) . ">{$label}</a>" .
-                        self::init([
-                            'options' => ['class' => 'dropdown-menu'],
-                            'items'   => $items
-                        ])
-                    . "</li>";
-
-        }
+    static private function renderItems($url, $label, $items, $options = null)
+    {
+        $items = self::init([
+            'options' => ['class' => 'dropdown-menu'],
+            'items'   => $items
+        ]);
+        return "<li class = 'dropdown " . self::isActive($url) . "'><a href = '{$url}'" . self::renderOptions($options) . ">{$label}</a>" . $items . "</li>";
     }
 
     static private function isActive($url)
     {
         if($url == Request::$url){
-            return "class = 'active' ";
+            return "active";
         }
-        return;
+        return '';
     }
 
 

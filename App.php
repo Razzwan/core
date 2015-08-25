@@ -74,6 +74,9 @@ class App
     }
 
     /**
+     * Реализация архитектуры MVC
+     * Метод создает контроллер, который соответствует текущему пути и запускает его метод, который так же соответствует
+     * текущему пути. В этот метод передаются параметры из массива GET
      * @param string $controller
      * @param string $action
      * @param array $attributes
@@ -93,13 +96,19 @@ class App
         }
 
         /**
-         * запускает метод контроллера с параметрами
+         * Если существует метод before, то запускаем его перед действием
          */
-        if(method_exists($controller_obj, "before")){//method before action
+        if(method_exists($controller_obj, "before")){
             call_user_func_array([$controller_obj, "before"], $attributes);
         }
+        /**
+         * запускает метод контроллера с параметрами
+         */
         call_user_func_array([$controller_obj, $this->lcaa['action'] . 'Action'], $attributes);
-        if(method_exists($controller_obj, "after")){//method after action
+        /**
+         * Если существует метод after, то запускаем его после действия
+         */
+        if(method_exists($controller_obj, "after")){
             call_user_func_array([$controller_obj, "after"], $attributes);
         }
     }
@@ -116,6 +125,7 @@ class App
         $message = 'Error level: ' . $errno . '<hr>' . $errstr . '<hr>' . $file . '<hr>string: ' . $line . '<hr>';
         $view = View::getView();
         if (!defined('DEVELOP') || !DEVELOP){
+            //добавить логирование
             $view->render(Liw::$config['def_route'], 'error', [
                 'error' => Liw::$lang['message']['error']
             ]);

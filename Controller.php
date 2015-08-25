@@ -32,7 +32,6 @@ class Controller
     public function redirect($action, $attr = null){
         if(is_array($action)){
             View::getView()->render($action[0],$action[1], $attr);
-            $this->afterAction();
             return;
         }
         header('Location: ' . $action);

@@ -15,6 +15,12 @@ class View
     private static $_view;
 
     /**
+     * html разметка страницы
+     * @var string
+     */
+    public $view;
+
+    /**
      * html-разметка текущего вида страницы
      * @var string
      */
@@ -71,6 +77,16 @@ class View
         return self::$_view;
     }
 
+    /**
+     * Метод рендерит страницу, которая находится по маршруту LIW_WEB . 'views/' . $folder . '/' . $view . '.php'
+     * В вид передается массив $attr пропущенный через функцию extract, что делает в нем доступными переменные,
+     * соответствующие ключам массива.
+     *
+     * @param $folder
+     * @param $view
+     * @param null $attr
+     * @throws \Exception
+     */
     public function render($folder, $view, $attr = null)
     {
         if(!empty(ob_get_contents())){
@@ -95,9 +111,19 @@ class View
             throw new \Exception('File: ' . $this->view_path . ' not exist!');
         }
         $this->view =  ob_get_clean();
+        /**
+         * нужен особый вывод ошибок, т.к. ошибка в лэйауте будет выводиться дважды, как обычная ошибка, и как ошибка
+         * внутри вывода ошибки.
+         */
         require LIW_WEB . 'views/layouts/' . Liw::$config['def_layout'] . '.php'; //подключение layout
     }
 
+    /**
+     * Рендерит произвольный блок
+     * @param $view
+     * @param null $attr
+     * @throws \Exception
+     */
     public function showBlock($view, $attr = null)
     {
         $this->view_path = LIW_WEB . 'views/' . $this->view_folder . '/' . $view . '.php';
