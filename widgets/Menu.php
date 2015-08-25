@@ -5,38 +5,8 @@ use liw\core\web\Request;
 
 class Menu
 {
-    static private $html = '
-        <nav>
-            <ul class="nav masthead-nav">
-                <li class="active"><a href="/">Привет!</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle my-drop" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Статьи <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="/articles">PHP</a></li>
-                        <li><a href="/articles">Ubuntu</a></li>
-                        <li><a href="/articles">Git</a></li>
-                        <li><a href="/articles">Bootstrap css</a></li>
-                        <li><a href="/articles">Composer и др.</a></li>
-                        <!--<li role="separator" class="divider"></li>
-                        <li class="dropdown-header">Nav header</li>
-                        <li><a href="#">В</a></li>-->
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="/lessons" class="dropdown-toggle my-drop" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Уроки <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="/lessons?part=1">PHP. ч-I</a></li>
-                        <li><a href="/lessons?part=2">PHP. ч-II. ООП</a></li>
-                    </ul>
-                </li>
-                <li><a href="/contacts">Для связи</a></li>
-            </ul>
-        </nav>
-                    ';
-
-    static private $widgetSettings;
-
     /**
+     * Возвращает html-разметку меню
      * @param $widgetSettings
      * @return string
      */
@@ -59,6 +29,11 @@ class Menu
         return '';
     }
 
+    /**
+     * генерирует элемент разметки
+     * @param $options array
+     * @return string
+     */
     static private function renderOptions($options = null)
     {
         if($options === null){
@@ -71,11 +46,25 @@ class Menu
         return $html;
     }
 
+    /**
+     * Генерирует тег li и его внутренности
+     * @param $url
+     * @param $label
+     * @return string
+     */
     static private function renderItem($url, $label)
     {
         return "<li class = '" . self::isActive($url) . "'><a href = '{$url}'>{$label}</a></li>";
     }
 
+    /**
+     * Генерирует li class = dropdown
+     * @param $url
+     * @param $label
+     * @param $items
+     * @param null $options
+     * @return string
+     */
     static private function renderItems($url, $label, $items, $options = null)
     {
         $items = self::init([
@@ -85,6 +74,12 @@ class Menu
         return "<li class = 'dropdown " . self::isActive($url) . "'><a href = '{$url}'" . self::renderOptions($options) . ">{$label}</a>" . $items . "</li>";
     }
 
+    /**
+     * Проверяет ссылку на совпадение с текущим адресом
+     * Нужно для подстветки активного элемента меню
+     * @param $url
+     * @return string
+     */
     static private function isActive($url)
     {
         if($url == Request::$url){
@@ -92,7 +87,5 @@ class Menu
         }
         return '';
     }
-
-
 
 }
