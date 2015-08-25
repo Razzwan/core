@@ -29,8 +29,6 @@ class Liw
 
     static public $lang   = [];
 
-    static public $request = '';
-
     static public $isGuest = true;
 
     static public $user = [];

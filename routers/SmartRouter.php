@@ -3,6 +3,7 @@ namespace liw\core\routers;
 
 use liw\core\Liw;
 use liw\core\validation\Clean;
+use liw\core\web\Request;
 
 /**
  * Класс отвечает за маршрутизацию
@@ -12,16 +13,19 @@ use liw\core\validation\Clean;
 class SmartRouter
 {
     /**
+     * Массив всех доступным маршрутов
      * @var array
      */
     static public $ways = [];
 
     /**
+     * Текущий путь без параметров
      * @var string
      */
     static private $route;
 
     /**
+     * Получает массив всех доступных маршрутов, исходя из прав доступа пользователя
      * @return mixed
      * @throws \Exception
      */
@@ -36,7 +40,7 @@ class SmartRouter
         }
 
         $arr = explode('?', Clean::url($_SERVER['REQUEST_URI']));
-        self::$route = Liw::$request = array_shift($arr);
+        self::$route = Request::$url = array_shift($arr);
 
         foreach(explode('/', self::$route) as $str){
             if(strlen($str)==2){
@@ -59,6 +63,10 @@ class SmartRouter
         return false;
     }
 
+    /**
+     * Загружает файлы маршрутов, в зависимости от переменной levels
+     * @return array
+     */
     static private function filesFromLevels(){
         /*$str = $_SESSION['user']['levels'];
         Liw::$user['levels']['article'] = substr($str, 0, 1);*/
