@@ -53,11 +53,7 @@ class View
     public $attr = [];
 
     /**
-     * Устанавливает название документа по умалчанию
-     * устанавливает название папки, в каталоге \liw\views,
-     * где хранятся виды для текущего контроллера
-     *
-     * @param $folder string название папки, где хранятся текущие виды
+     * Устанавливает название (title) документа по умалчанию
      */
     private function __construct()
     {
@@ -67,7 +63,7 @@ class View
     /**
      * запрет клонирования
      */
-    //private function __clone(){}
+    private function __clone(){}
 
     public static function getView()
     {
