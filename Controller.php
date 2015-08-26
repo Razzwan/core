@@ -4,12 +4,6 @@ namespace liw\core;
 class Controller
 {
     /**
-     * Действие по умолчанию
-     * @var string
-     */
-    public $default_action = 'index';
-
-    /**
      * Запускает генерацию страницы
      * @param $view
      * @param null $attributes
@@ -18,9 +12,6 @@ class Controller
     public function render($view, $attributes = null)
     {
         View::getView()->render($this->getClassFromPath(), $view, $attributes);
-        if(method_exists($this,'afterRender')){
-            call_user_func([$this, "afterRender"]);
-        }
     }
 
     /**

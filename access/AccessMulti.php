@@ -1,28 +1,39 @@
 <?php
-namespace liw\core\routers;
-
-use liw\core\Liw;
-use liw\core\validation\Clean;
-use liw\core\web\Request;
-
 /**
- * Класс отвечает за маршрутизацию
- * Class SmartRouter
- * @package liw\core
+ * Created by Razzwan.
+ * Date: 26.08.15
+ * Time: 15:36
  */
-class SmartRouter
+
+namespace liw\access;
+
+class AccessMulti implements AccessInterface
 {
     /**
      * Массив всех доступным маршрутов
      * @var array
      */
-    static public $ways = [];
+    static private $ways = [];
+
+    /**
+     * Массив данных о текущем запросе
+     * @var array
+     */
+    static private $way = [];
 
     /**
      * Текущий путь без параметров
      * @var string
      */
     static private $route;
+
+    /**
+     *
+     */
+    static public function getWays()
+    {
+
+    }
 
     /**
      * Получает массив всех доступных маршрутов, исходя из прав доступа пользователя
@@ -51,14 +62,16 @@ class SmartRouter
         }
 
         if (isset(self::$ways[self::$route])) {
-            self::$ways = self::$ways[self::$route];
+            self::$way = self::$ways[self::$route];
             if(!empty($_GET)){
-                self::$ways['attributes'] = $_GET;
+                self::$way['attributes'] = $_GET;
             }
             if(!empty($language)){
-                self::$ways['language'] = $language;
+                self::$way['language'] = $language;
             }
-            return self::$ways;
+            var_dump(self::$way);
+            exit;
+            return self::$way;
         }
         return false;
     }
@@ -79,5 +92,4 @@ class SmartRouter
         }
         return $arr;
     }
-
 }

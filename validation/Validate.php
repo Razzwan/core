@@ -56,4 +56,12 @@ class Validate
         }
         return Liw::$lang['error']['login'];
     }
+
+    static public function regV($var, $regV)
+    {
+        if(preg_match($regV, $var, $matches)){
+            return false;
+        }
+        return Liw::$lang['error']['login'];
+    }
 }

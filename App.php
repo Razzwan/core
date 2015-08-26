@@ -1,72 +1,69 @@
 <?php
 namespace liw\core;
 
-use liw\core\routers\SmartRouter;
+use liw\access\AccessInterface;
+use liw\core\routers\Router;
+use liw\core\web\Request;
+use liw\core\web\Session;
 
 class App
 {
     /**
-     * @var array
+     * @param null|string $lang
      */
-    private $lcaa = [
-        'language'   => '',
-        'controller' => '',
-        'action'     => '',
-        'attributes' => []
-    ];
-
-
-    /**
-     * Загрузка языка
-     */
-    private function loadLanguage()
+    private function loadLanguage($lang = null)
     {
+        if($lang !== null){
+            $file = LIW_WEB . 'config/languages/' . $lang . '.php';
+            if(file_exists($file)){
+                Liw::$lang = require $file;
+                return;
+            }
+        }
+
         if(!empty($_SESSION['language'])){
-            $file_path = LIW_WEB . 'config/languages/' . $_SESSION['language'] . '.php';
-            if(file_exists($file_path)){
-                Liw::$lang = require $file_path;
+            $file = LIW_WEB . 'config/languages/' . $_SESSION['language'] . '.php';
+            if(file_exists($file)){
+                Liw::$lang = require $file;
                 return;
             }
         }
         if(isset($_SESSION['language'])) unset($_SESSION['language']);
-        $file_path = LIW_WEB . 'config/languages/' . Liw::$config['def_lang'] . '.php';
-        Liw::$lang = require $file_path;
+        $file = LIW_WEB . 'config/languages/' . Liw::$config['def_lang'] . '.php';
+        Liw::$lang = require $file;
     }
 
     /**
-     * запуск приложения
-     * @param $config
+     * @param array $config
+     * @param AccessInterface|null $access
+     * @throws \Exception
      */
-    public function start($config){
-        set_error_handler([$this, 'show_errors']);
+    public function start(array $config = [], AccessInterface $access = null){
+        set_error_handler([$this, 'show_errors']); // изменение отображения ошибок по умолчанию
         Liw::$config = $config;
-        // изменение отображения ошибок по умолчанию
-
         try {
-            session_name('liw');
-            session_start();
 
-            $this->loadLanguage();
+            Request::getRequest();
 
-            if (isset($_SESSION['user']) && !empty($_SESSION['user']['login'])){
-                Liw::$isGuest = false;
-            }
+            Session::start();
 
-            if(($way = SmartRouter::getRoute())){
-                $this->lcaa = array_merge($this->lcaa, $way);
+            $this->loadLanguage(Request::$lang);
+
+            if($access === null){
+                $ways = include LIW_WEB . 'config/ways/guest.php';
             } else {
-                throw new \Exception("No route: " . $_SERVER['REQUEST_URI']);
+                $ways = $access::getWays();
             }
 
-            if(!empty($this->lcaa['language'])){
-                $file_path = LIW_WEB . 'config/languages/' . $this->lcaa['language'] . '.php';
-                if(file_exists($file_path)){
-                    $_SESSION['language'] = $this->lcaa['language'];
-                    Liw::$lang = require $file_path;
-                }
+            if(!isset($ways[Request::$url])){
+                throw new \Exception('no route: '. Request::$url);
             }
 
-            $this->mvc($this->lcaa['controller'], $this->lcaa['action'], $this->lcaa['attributes']);
+            $way = $ways[Request::$url];
+
+            $way = Router::getWay(Request::$attr, Request::$get, $way);
+
+            $this->mvc($way['controller'], $way['action'], $way['attr']);
         }
         catch (\Exception $e) {
             $this->show_errors($e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
@@ -85,31 +82,30 @@ class App
     private function mvc ($controller, $action, $attributes = null) {
         $controller_route = '\web\controllers\\' . ucfirst($controller) . 'Controller';
         if (!class_exists($controller_route)) {
-            throw new \Exception(Liw::$lang['message']['no_controller'] . $this->lcaa['controller']);
+            throw new \Exception(Liw::$lang['message']['no_controller'] . self::$lcaa['controller']);
         }
         $controller_obj = new $controller_route();
-        $this->lcaa['action'] = $action ?: $controller_obj->default_action;
-        if (!method_exists($controller_obj, $this->lcaa['action'] . 'Action')) {
+        if (!method_exists($controller_obj, $action . 'Action')) {
             throw new \Exception(Liw::$lang['message']['no_action'] .
-                '<strong>' .$this->lcaa['action'] . '</strong> in controller <strong>' .
-                $this->lcaa['controller'] . '</strong>');
+                '<strong>' . $action . '</strong> in controller <strong>' .
+                $controller . '</strong>');
         }
 
         /**
          * Если существует метод before, то запускаем его перед действием
          */
         if(method_exists($controller_obj, "before")){
-            call_user_func_array([$controller_obj, "before"], $attributes);
+            call_user_func_array([$controller_obj, "before"], $attributes = []);
         }
         /**
          * запускает метод контроллера с параметрами
          */
-        call_user_func_array([$controller_obj, $this->lcaa['action'] . 'Action'], $attributes);
+        call_user_func_array([$controller_obj, $action . 'Action'], $attributes = []);
         /**
          * Если существует метод after, то запускаем его после действия
          */
         if(method_exists($controller_obj, "after")){
-            call_user_func_array([$controller_obj, "after"], $attributes);
+            call_user_func_array([$controller_obj, "after"], $attributes = []);
         }
     }
 
