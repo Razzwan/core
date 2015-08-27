@@ -1,7 +1,7 @@
 <?php
 namespace liw\core;
 
-use liw\access\AccessInterface;
+use liw\core\access\AccessInterface;
 use liw\core\routers\Router;
 use liw\core\web\Request;
 use liw\core\web\Session;

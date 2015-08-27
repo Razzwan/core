@@ -5,7 +5,7 @@
  * Time: 15:41
  */
 
-namespace liw\access;
+namespace liw\core\access;
 
 
 interface AccessInterface
