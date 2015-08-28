@@ -38,7 +38,7 @@ use liw\core\develop\Dev;
     <div id="show_session">
         <?php
         echo "<pre>";
-        if(isset($_SESSION)) print_r($_SESSION);
+        if(print_r($_SESSION));
         echo "</pre>";
         ?>
     </div>

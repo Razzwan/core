@@ -2,28 +2,29 @@
 namespace liw\core\model;
 
 use liw\core\Liw;
+use liw\core\web\Session;
 
 class BaseModel
 {
     /**
-     * ������������� ������ ����� � �������� ������
+     * Все переменные модели хранятся здесь
      * @var array
      */
     public $fields = [];
 
     /**
-     * ������ ������� ��� �������� ����� ������
+     * Лэйблы для переменных из fields хранятся здесь
      */
     public function labelFields(){return[];}
 
     /**
-     * ����� ������, ���� ��� ���������, ��� false, � ������ �� ����������
+     * Хранит текст ошибки, или false, если ошибка отсутствует
      * @var
      */
     public $error = false;
 
     /**
-     * ������� ��� ����� � �������
+     * Хранит правила, по которым происходит верификация
      * @inheritdoc
      */
     public function rules()
@@ -32,8 +33,8 @@ class BaseModel
     }
 
     /**
-     * ����������� $this->error ����� ������
-     * @return bool ������ � ������ �������� ���������, ���� - � ������ ������
+     * Если была ошибка, то в поле $this->error заполнится здесь
+     * @return bool true, если валидация пройдена и false в противном случае
      */
     public function validate(){
         foreach ($this->rules() as $field => $arrRules){
@@ -64,7 +65,7 @@ class BaseModel
     }
 
     /**
-     * ���������� ��������� ������� ���� � ����������� �������� $fields ������ �� ������� $_POST,
+     * Сохраняет переменные из массива $_POST в $this->fields, затем проверяет на соответсвтие правилам rules
      *
      * @param  array
      * @return mixed
@@ -76,8 +77,18 @@ class BaseModel
                 if(in_array($key, array_keys($this->rules()))){
                      $this->fields[$key] = $value;
                 }
+                if($key == 'captcha'){
+                    if($value == $_SESSION['phrase']){
+                        Session::delete('phrase');
+                        continue;
+                    } else {
+                        $this->error = 'error code';
+                        Session::delete('phrase');
+                        return false;
+                    }
+                }
             }
-            return $this->validate(); //���������� ������ � ������ �������� ���������, ����� - ����
+            return $this->validate(); //возвращает true в случае удачной валидации и false в противном случае
         }
         return false;
     }
