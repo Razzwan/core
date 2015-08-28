@@ -63,7 +63,7 @@ class App
 
             $way = Router::getWay(Request::$attr, Request::$get, $way);
 
-            $this->mvc($way['controller'], $way['action'], $way['attr']);
+            $this->mvc($way['controller'], $way['action']);
         }
         catch (\Exception $e) {
             $this->show_errors($e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
@@ -79,7 +79,7 @@ class App
      * @param array $attributes
      * @throws \Exception
      */
-    private function mvc ($controller, $action, $attributes = null) {
+    private function mvc ($controller, $action) {
         $controller_route = '\web\controllers\\' . ucfirst($controller) . 'Controller';
         if (!class_exists($controller_route)) {
             throw new \Exception(Liw::$lang['message']['no_controller'] . self::$lcaa['controller']);
@@ -95,17 +95,17 @@ class App
          * Если существует метод before, то запускаем его перед действием
          */
         if(method_exists($controller_obj, "before")){
-            call_user_func_array([$controller_obj, "before"], $attributes = []);
+            call_user_func_array([$controller_obj, "before"], Request::$attr);
         }
         /**
          * запускает метод контроллера с параметрами
          */
-        call_user_func_array([$controller_obj, $action . 'Action'], $attributes = []);
+        call_user_func_array([$controller_obj, $action . 'Action'], Request::$attr);
         /**
          * Если существует метод after, то запускаем его после действия
          */
         if(method_exists($controller_obj, "after")){
-            call_user_func_array([$controller_obj, "after"], $attributes = []);
+            call_user_func_array([$controller_obj, "after"], Request::$attr);
         }
     }
 

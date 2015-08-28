@@ -1,8 +1,6 @@
 <?php
 namespace liw\core\routers;
 
-use liw\core\Liw;
-use liw\core\validation\Clean;
 use liw\core\validation\Validate;
 use liw\core\web\Request;
 
@@ -23,7 +21,7 @@ class Router
     static public function getWay(array $attr = null, array $get = null, array $way){
         if (isset($way['options'])){
             if(count($way['options']) != count($attr)){
-                $way['attr'] = [];
+                Request::$attr = [];
                 return $way;
             }
             $i = 0;
@@ -33,16 +31,16 @@ class Router
                 }
             }
             if($get){
-                $way['attr'] = array_merge($attr, $get);
+                Request::$attr = array_merge($attr, $get);
             } else {
-                $way['attr'] = $attr;
+                Request::$attr = $attr;
             }
 
         } else {
             if($get){
-                $way['attr'] = $get;
+                Request::$attr = $get;
             } else {
-                $way['attr'] = [];
+                Request::$attr = [];
             }
 
         }
