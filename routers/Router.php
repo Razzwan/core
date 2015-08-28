@@ -23,19 +23,28 @@ class Router
     static public function getWay(array $attr = null, array $get = null, array $way){
         if (isset($way['options'])){
             if(count($way['options']) != count($attr)){
-                throw new \Exception('Count of way options does not match with count of attr in url!');
+                $way['attr'] = [];
+                return $way;
             }
             $i = 0;
             foreach ($way['options'] as $option => $regV ){
                 if (Validate::regV($attr[$i], $regV)){
                     throw new \Exception('Variable <strong>' . $option . '</strong> does not comply!');
-                } else {
-                    echo 'all r';
                 }
             }
-            $way['attr'] = array_merge($attr, $get);
+            if($get){
+                $way['attr'] = array_merge($attr, $get);
+            } else {
+                $way['attr'] = $attr;
+            }
+
         } else {
-            $way['attr'] = $get;
+            if($get){
+                $way['attr'] = $get;
+            } else {
+                $way['attr'] = [];
+            }
+
         }
         return $way;
     }
