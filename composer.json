@@ -1,0 +1,20 @@
+{
+    "name": "liw/core",
+    "description": "The Liw Framework",
+    "type": "library",
+    "keywords": ["framework", "liw"],
+    "license": "MIT",
+    "homepage": "https://github.com/Razzwan/core",
+    "support": {
+        "issues": "https://github.com/Razzwan/core/issues"
+    },
+    "authors": [
+        {
+            "name": "Pavel Belik",
+            "email": "razvanlomov@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "liw\\core\\": "" }
+    }
+}
