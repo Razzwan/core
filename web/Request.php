@@ -10,11 +10,29 @@ use liw\core\validation\Clean;
 
 class Request
 {
+    /**
+     * @var string основной маршрут
+     */
     static public  $url;
+
+    /**
+     * @var array массив передаваемых параметров
+     */
     static public  $attr;
+
+    /**
+     * @var array массив $_GET
+     */
     static public  $get;
+
+    /**
+     * @var string (length = 2) текущий запрошеный язык
+     */
     static public  $lang;
 
+    /**
+     * Получаем из запроса данные и очеловечиваем их
+     */
     static public function getRequest()
     {
         /**
