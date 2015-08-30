@@ -93,7 +93,7 @@ class Request
         if (isset($way['options'])){
             $arr = self::$attr;
             foreach ($way['options'] as $option => $regV ){
-                if (Is::valid('regV', array_shift($arr), $regV) !== true){
+                if (Is::regV(array_shift($arr), $regV) !== true){
                     throw new \Exception('Variable <strong>' . $option . '</strong> does not comply!');
                 }
             }
