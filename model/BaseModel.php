@@ -41,7 +41,7 @@ class BaseModel
             if(in_array($field, array_keys($this->fields))){
                 foreach($arrRules as $key => $value){
                     if(is_int($value)){
-                        if(($error = call_user_func('liw\core\validation\Is::valid', $key, $this->fields[$field], $value)) !== true){
+                        if(($error = call_user_func('liw\core\validation\Is::' . $key, $this->fields[$field], $value)) !== true){
                             $this->error = Liw::$lang['error']['field'] . is_null($this->labelFields()[$field]) . Liw::$lang['error'][$error] . $value;
                             return false;
                         }
@@ -52,7 +52,7 @@ class BaseModel
                                 return false;
                             }
                         }else{
-                            if(($error = call_user_func('liw\core\validation\Is::valid',  $value, $this->fields[$field])) !== true){
+                            if(($error = call_user_func('liw\core\validation\Is::' .  $value, $this->fields[$field])) !== true){
                                 $this->error = Liw::$lang['error']['field'] . $this->labelFields()[$field] . Liw::$lang['error'][$error];
                                 return false;
                             }
