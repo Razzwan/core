@@ -120,10 +120,15 @@ class App
         $view = View::getView();
         if (!defined('DEVELOP') || !DEVELOP){
             //добавить логирование
-            $view->render(Liw::$config['def_route'], 'error', [
-                'error' => Liw::$lang['message']['error']
-            ]);
+            if(Request::isAjax()){
+                include LIW_WEB .'views/main/error.php';
+            } else {
+                $view->render(Liw::$config['def_route'], 'error', [
+                    'error' => Liw::$lang['message']['error']
+                ]);
+            }
         } else {
+
             $view->render(Liw::$config['def_route'], 'error', [
                 'error' => $message
             ]);
