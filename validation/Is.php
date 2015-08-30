@@ -33,9 +33,9 @@ class Is
     static public function number($var)
     {
         if (is_numeric($var)) {
-            return false;
+            return true;
         }
-        return Liw::$lang['error']['number'];
+        return 'number';
     }
 
 
