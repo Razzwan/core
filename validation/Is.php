@@ -1,8 +1,6 @@
 <?php
 namespace liw\core\validation;
 
-use liw\core\Liw;
-
 class Is
 {
     static public function required($var)
