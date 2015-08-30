@@ -41,3 +41,4 @@ require LIW_CORE . 'core/Loader.php'; //Подключение файла авт
  * Регистрация автозагрузчика
  */
 (new Loader())->register();
+

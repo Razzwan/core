@@ -23,7 +23,8 @@ class Loader
      */
     public function register()
     {
-        spl_autoload_register(array($this, 'loadClass'));
+        spl_autoload_register(array($this, 'loadClass'), true, true); //1-e true выбрасывать ошибку, если не смог загрузить файл
+                                                                      //2-е true регистрировать в начале стека
     }
 
     /**

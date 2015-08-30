@@ -36,14 +36,14 @@ class App
     /**
      * @param array $config
      * @param AccessInterface|null $access
-     * @throws \Exception
+     * @param null $request
      */
-    public function start(array $config = [], AccessInterface $access = null){
+    public function start(array $config = [], AccessInterface $access = null, $request = null){
         set_error_handler([$this, 'show_errors']); // изменение отображения ошибок по умолчанию
         Liw::$config = $config;
         try {
 
-            Request::getRequest();
+            Request::getRequest($request);
 
             Session::start();
 
@@ -55,13 +55,12 @@ class App
                 $ways = $access::getWays();
             }
 
-            if(!isset($ways[Request::$url])){
-                throw new \Exception('no route: '. Request::$url);
+            if(!isset($ways[Request::$route])){
+                throw new \Exception('no route: '. Request::$route);
             }
 
-            $way = $ways[Request::$url];
-
-            $way = Router::getWay(Request::$attr, Request::$get, $way);
+            $way = $ways[Request::$route];
+            Request::checkAllowedVariables($way);
 
             $this->mvc($way['controller'], $way['action']);
         }

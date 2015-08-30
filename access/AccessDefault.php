@@ -13,9 +13,15 @@ class AccessDefault implements AccessInterface
     static public function getWays()
     {
         if(Liw::$isGuest){
-            return include LIW_WEB . 'config/ways/guest.php';
+            $file = LIW_WEB . 'config/ways/guest.php';
         } else {
-            return include LIW_WEB . 'config/ways/login.php';
+            $file = LIW_WEB . 'config/ways/login.php';
+        }
+
+        if(is_file($file)){
+            return require_once $file;
+        } else {
+            throw new \Exception("File: " . $file . " not exist.");
         }
     }
 }

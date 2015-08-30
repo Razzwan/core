@@ -51,7 +51,7 @@ class AccessMulti implements AccessInterface
         }
 
         $arr = explode('?', Clean::url($_SERVER['REQUEST_URI']));
-        self::$route = Request::$url = array_shift($arr);
+        self::$route = Request::$route = array_shift($arr);
 
         foreach(explode('/', self::$route) as $str){
             if(strlen($str)==2){
