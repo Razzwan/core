@@ -1,17 +1,18 @@
 <?php
 namespace liw\core;
 
-use liw\core\access\AccessInterface;
-use liw\core\routers\Router;
+use liw\core\access\AccessDefault;
 use liw\core\web\Request;
 use liw\core\web\Session;
+use liw\core\validation\Clean;
 
 class App
 {
     /**
      * @param null|string $lang
+     * @return void
      */
-    private function loadLanguage($lang = null)
+    static private function loadLanguage($lang = null)
     {
         if($lang !== null){
             $file = LIW_WEB . 'config/languages/' . $lang . '.php';
@@ -34,20 +35,20 @@ class App
     }
 
     /**
-     * @param array $config
-     * @param AccessInterface|null $access
-     * @param null $request
+     *
      */
-    public function start(array $config = [], AccessInterface $access = null, $request = null){
-        set_error_handler([$this, 'show_errors']); // изменение отображения ошибок по умолчанию
-        Liw::$config = $config;
+    static public function start(){
+        set_error_handler("self::show_errors"); // изменение отображения ошибок по умолчанию
+        Liw::$config = require_once LIW_WEB . 'config/config.php';
         try {
 
-            Request::getRequest($request);
+            self::getRequest();
 
             Session::start();
 
-            $this->loadLanguage(Request::$lang);
+            self::loadLanguage(Request::$lang);
+
+            $access = new AccessDefault();
 
             if($access === null){
                 $ways = include LIW_WEB . 'config/ways/guest.php';
@@ -62,11 +63,54 @@ class App
             $way = $ways[Request::$route];
             Request::checkAllowedVariables($way);
 
-            $this->mvc($way['controller'], $way['action']);
+            self::mvc($way['controller'], $way['action']);
         }
         catch (\Exception $e) {
-            $this->show_errors($e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
+            self::show_errors($e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
         }
+    }
+
+    static private function getRequest($request = null)
+    {
+        /**
+         * отделяем все до знака ? и помещаем в переменную url
+         */
+        if ($request ===  null) $request = $_SERVER['REQUEST_URI'];
+        $request = Clean::url($request);
+        $arr = explode('?', $request);
+        Request::$route = array_shift($arr);
+
+        self::getLang();
+
+        self::getAttr();
+    }
+
+    static private function getLang()
+    {
+        /**
+         * если есть переменная из 2х символов, то считаем это языком и сохраняем
+         */
+        if (Request::$route !== '/') {
+            foreach(explode('/', Request::$route) as $language){
+                if(strlen($language)==2){
+                    Request::$route = str_replace('/'.$language, '', self::$route); //вырезаем из route язык, чтоб не мешался
+                    Request::$lang = $language;
+                }
+            }
+        }
+    }
+
+    static private function getAttr()
+    {
+        /**
+         * символом '/:' отделены переменные
+         */
+        $arr = explode('/:', Request::$route);
+        Request::$route = array_shift($arr);                  // отрезали и сохранили основную часть url
+        Request::$attr = count($arr) ? $arr : [];
+        if(!empty($_GET)) {
+            Request::$attr = array_merge(Request::$attr, $_GET); //если массив GET не пуст, то добавляем его элементы в конец
+        }                                                    //массива Request::$attr
     }
 
     /**
@@ -77,10 +121,10 @@ class App
      * @param string $action
      * @throws \Exception
      */
-    private function mvc ($controller, $action) {
+    static private function mvc ($controller, $action) {
         $controller_route = '\web\controllers\\' . ucfirst($controller) . 'Controller';
         if (!class_exists($controller_route)) {
-            throw new \Exception(Liw::$lang['message']['no_controller'] . self::$lcaa['controller']);
+            throw new \Exception(Liw::$lang['message']['no_controller'] . $controller);
         }
         $controller_obj = new $controller_route();
         if (!method_exists($controller_obj, $action . 'Action')) {
@@ -114,21 +158,16 @@ class App
      * @param int $line
      * @throws \Exception
      */
-    public function show_errors($errno, $errstr, $file, $line)
+    static public function show_errors($errno, $errstr, $file, $line)
     {
         $message = 'Error level: ' . $errno . '<hr>' . $errstr . '<hr>' . $file . '<hr>string: ' . $line . '<hr>';
         $view = View::getView();
         if (!defined('DEVELOP') || !DEVELOP){
             //добавить логирование
-            if(Request::isAjax()){
-                include LIW_WEB .'views/main/error.php';
-            } else {
-                $view->render(Liw::$config['def_route'], 'error', [
-                    'error' => Liw::$lang['message']['error']
-                ]);
-            }
+            $view->render(Liw::$config['def_route'], 'error', [
+                'error' => Liw::$lang['message']['error']
+            ]);
         } else {
-
             $view->render(Liw::$config['def_route'], 'error', [
                 'error' => $message
             ]);

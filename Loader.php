@@ -142,9 +142,9 @@ class Loader
     protected function requireFile($file)
     {
         if (file_exists($file)) {
-            /*if(defined("DEVELOP") && DEVELOP ===true){
+            if(defined("DEVELOP") && DEVELOP ===true){
                 Dev::$dev['classes'][] = $file;
-            }*/
+            }
             require $file;
             return true;
         }
