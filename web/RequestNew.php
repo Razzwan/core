@@ -1,15 +1,10 @@
 <?php
-/**
- * Created by Razzwan.
- * Date: 25.08.15
- * Time: 20:33
- */
 namespace liw\core\web;
 
 use liw\core\validation\Clean;
 use liw\core\validation\Is;
 
-class Request
+class RequestNew
 {
     /**
      * @var string основной маршрут
@@ -48,10 +43,14 @@ class Request
     static public function getRequest($request = null)
     {
         /**
-         * отделяем все до знака ? и помещаем в переменную url
+         * отделяем все до знака ? и помещаем в переменную self::$route
          */
         if ($request ===  null) $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         self::$route = urldecode($request);
+
+        $tpl = preg_replace('/:[a-z]+/i', '([a-z0-9]+)', self::$route);
+        echo $tpl = '/^' . preg_replace('/\//', '\/', $tpl) . '$/i';
+        exit;
 
         self::getLang();
 

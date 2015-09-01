@@ -3,6 +3,7 @@ namespace liw\core;
 
 use liw\core\access\AccessDefault;
 use liw\core\web\Request;
+use liw\core\web\RequestNew;
 use liw\core\web\Session;
 use liw\core\validation\Clean;
 
@@ -42,7 +43,9 @@ class App
         Liw::$config = require_once LIW_WEB . 'config/config.php';
         try {
 
-            self::getRequest();
+            RequestNew::getRequest();
+
+
 
             Session::start();
 
@@ -56,61 +59,18 @@ class App
                 $ways = $access::getWays();
             }
 
-            if(!isset($ways[Request::$route])){
-                throw new \Exception('no route: '. Request::$route);
+            if(!isset($ways[RequestNew::$route])){
+                throw new \Exception('no route: '. RequestNew::$route);
             }
 
-            $way = $ways[Request::$route];
-            Request::checkAllowedVariables($way);
+            $way = $ways[RequestNew::$route];
+            RequestNew::checkAllowedVariables($way);
 
             self::mvc($way['controller'], $way['action']);
         }
         catch (\Exception $e) {
             self::show_errors($e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
         }
-    }
-
-    static private function getRequest($request = null)
-    {
-        /**
-         * отделяем все до знака ? и помещаем в переменную url
-         */
-        if ($request ===  null) $request = $_SERVER['REQUEST_URI'];
-        $request = Clean::url($request);
-        $arr = explode('?', $request);
-        Request::$route = array_shift($arr);
-
-        self::getLang();
-
-        self::getAttr();
-    }
-
-    static private function getLang()
-    {
-        /**
-         * если есть переменная из 2х символов, то считаем это языком и сохраняем
-         */
-        if (Request::$route !== '/') {
-            foreach(explode('/', Request::$route) as $language){
-                if(strlen($language)==2){
-                    Request::$route = str_replace('/'.$language, '', self::$route); //вырезаем из route язык, чтоб не мешался
-                    Request::$lang = $language;
-                }
-            }
-        }
-    }
-
-    static private function getAttr()
-    {
-        /**
-         * символом '/:' отделены переменные
-         */
-        $arr = explode('/:', Request::$route);
-        Request::$route = array_shift($arr);                  // отрезали и сохранили основную часть url
-        Request::$attr = count($arr) ? $arr : [];
-        if(!empty($_GET)) {
-            Request::$attr = array_merge(Request::$attr, $_GET); //если массив GET не пуст, то добавляем его элементы в конец
-        }                                                    //массива Request::$attr
     }
 
     /**
