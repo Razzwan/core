@@ -5,9 +5,11 @@ use liw\core\web\Request;
 
 class Router
 {
-    private $languages = ['ru', 'en', 'ua'];
+    static private $languages = ['ru', 'en', 'ua'];
 
-    public function parseRequest($request, $ways)
+    static public $way;
+
+    static public function parseRequest($request, $ways)
     {
         $route = $request;
         $arr = explode('/', $request);
@@ -18,20 +20,51 @@ class Router
                 if(count($attr) >= count($options)){
                     Request::$route = $route;
                     Request::$attr = $attr;
+                    self::$way = $ways[$route];
+                    return;
                 } else {
-                    throw new \Exception("Размерность запрашиваемого массива не совпада");
+                    throw new \Exception("Переданный массив данных меньше необходимого.");
                 }
-                return;
             } else {
                 $last = array_pop($arr);
-                if(strlen($last) == 2 && in_array($last, $this->languages)){
+                if(strlen($last) == 2 && in_array($last, self::$languages)){
                     Request::$lang = $last;
                 } else {
                     array_push($attr, $last);
-                    $route = implode($arr);
                 }
+                $route = implode('/', $arr);
             }
         }
-        throw new \Exception("No route " . $request);
+        throw new \Exception("No route: " . $request);
+    }
+
+    static public function run(){
+        $controller_route = '\web\controllers\\' . self::$way[0];
+        if (!class_exists($controller_route)) {
+            throw new \Exception(Liw::$lang['message']['no_controller'] . self::$way[0]);
+        }
+        $controller_obj = new $controller_route();
+        if (!method_exists($controller_obj, self::$way[1])) {
+            throw new \Exception(Liw::$lang['message']['no_action'] .
+                '<strong>' . self::$way[1] . '</strong> in controller <strong>' .
+                self::$way[0] . '</strong>');
+        }
+
+        /**
+         * Если существует метод before, то запускаем его перед действием
+         */
+        if(method_exists($controller_obj, "before")){
+            call_user_func_array([$controller_obj, "before"], Request::$attr);
+        }
+        /**
+         * запускает метод контроллера с параметрами
+         */
+        call_user_func_array([$controller_obj, self::$way[1]], Request::$attr);
+        /**
+         * Если существует метод after, то запускаем его после действия
+         */
+        if(method_exists($controller_obj, "after")){
+            call_user_func_array([$controller_obj, "after"], Request::$attr);
+        }
     }
 }

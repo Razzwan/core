@@ -18,6 +18,7 @@ class App
         if($lang !== null){
             $file = LIW_WEB . 'config/languages/' . $lang . '.php';
             if(file_exists($file)){
+                $_SESSION['language'] = $lang;
                 Liw::$lang = require $file;
                 return;
             }
@@ -43,71 +44,16 @@ class App
         Liw::$config = require_once LIW_WEB . 'config/config.php';
         try {
 
-            RequestNew::getRequest();
-
-
-
             Session::start();
+
+            Router::parseRequest(RequestNew::getRequest(), AccessDefault::getWays());
 
             self::loadLanguage(Request::$lang);
 
-            $access = new AccessDefault();
-
-            if($access === null){
-                $ways = include LIW_WEB . 'config/ways/guest.php';
-            } else {
-                $ways = $access::getWays();
-            }
-
-            if(!isset($ways[RequestNew::$route])){
-                throw new \Exception('no route: '. RequestNew::$route);
-            }
-
-            $way = $ways[RequestNew::$route];
-            RequestNew::checkAllowedVariables($way);
-
-            self::mvc($way['controller'], $way['action']);
+            Router::run();
         }
         catch (\Exception $e) {
             self::show_errors($e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
-        }
-    }
-
-    /**
-     * Реализация архитектуры MVC
-     * Метод создает контроллер, который соответствует текущему пути и запускает его метод, который так же соответствует
-     * текущему пути. В этот метод передаются параметры из массива GET
-     * @param string $controller
-     * @param string $action
-     * @throws \Exception
-     */
-    static private function mvc ($controller, $action) {
-        $controller_route = '\web\controllers\\' . ucfirst($controller) . 'Controller';
-        if (!class_exists($controller_route)) {
-            throw new \Exception(Liw::$lang['message']['no_controller'] . $controller);
-        }
-        $controller_obj = new $controller_route();
-        if (!method_exists($controller_obj, $action . 'Action')) {
-            throw new \Exception(Liw::$lang['message']['no_action'] .
-                '<strong>' . $action . '</strong> in controller <strong>' .
-                $controller . '</strong>');
-        }
-
-        /**
-         * Если существует метод before, то запускаем его перед действием
-         */
-        if(method_exists($controller_obj, "before")){
-            call_user_func_array([$controller_obj, "before"], Request::$attr);
-        }
-        /**
-         * запускает метод контроллера с параметрами
-         */
-        call_user_func_array([$controller_obj, $action . 'Action'], Request::$attr);
-        /**
-         * Если существует метод after, то запускаем его после действия
-         */
-        if(method_exists($controller_obj, "after")){
-            call_user_func_array([$controller_obj, "after"], Request::$attr);
         }
     }
 

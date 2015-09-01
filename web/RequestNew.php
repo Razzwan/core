@@ -46,15 +46,11 @@ class RequestNew
          * отделяем все до знака ? и помещаем в переменную self::$route
          */
         if ($request ===  null) $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        self::$route = urldecode($request);
+        return self::$route = urldecode($request);
 
-        $tpl = preg_replace('/:[a-z]+/i', '([a-z0-9]+)', self::$route);
-        echo $tpl = '/^' . preg_replace('/\//', '\/', $tpl) . '$/i';
-        exit;
+        /*self::getLang();
 
-        self::getLang();
-
-        self::getAttr();
+        self::getAttr();*/
     }
 
     static private function getLang()
