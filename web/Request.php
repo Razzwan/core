@@ -7,7 +7,6 @@
 namespace liw\core\web;
 
 use liw\core\validation\Clean;
-use liw\core\validation\Is;
 
 class Request
 {

@@ -3,9 +3,7 @@ namespace liw\core;
 
 use liw\core\access\AccessDefault;
 use liw\core\web\Request;
-use liw\core\web\RequestNew;
 use liw\core\web\Session;
-use liw\core\validation\Clean;
 
 class App
 {
