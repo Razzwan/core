@@ -8,8 +8,9 @@ use liw\core\web\Session;
 class App
 {
     /**
+     * Загружаем язык
      * @param null|string $lang
-     * @return void
+     * @throws \Exception
      */
     static private function loadLanguage($lang = null)
     {
@@ -19,6 +20,8 @@ class App
                 $_SESSION['language'] = $lang;
                 Liw::$lang = require $file;
                 return;
+            } else {
+                throw new \Exception("File " . $file . " not exist.");
             }
         }
 
@@ -35,7 +38,7 @@ class App
     }
 
     /**
-     *
+     * Загружаем все необходимые данные и запускаем выполнение метода контроллера
      */
     static public function start(){
         set_error_handler("self::show_errors"); // изменение отображения ошибок по умолчанию

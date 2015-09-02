@@ -25,7 +25,7 @@ class Request
     /**
      * @var string (length = 2) текущий запрошеный язык
      */
-    static public  $lang = '';
+    static public  $lang;
 
     static private $ajax;
 
@@ -76,9 +76,9 @@ class Request
     static private function getAttr()
     {
         /**
-         * символом '/:' отделены переменные
+         * символом '/=' отделены переменные
          */
-        $arr = explode('/:', self::$route);
+        $arr = explode('/=', self::$route);
         self::$route = array_shift($arr);                  // отрезали и сохранили основную часть url
         self::$attr = count($arr) ? $arr : [];
         if(!empty($_GET)) {
