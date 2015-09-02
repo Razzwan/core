@@ -1,5 +1,6 @@
 <?php
 namespace liw\core;
+use liw\core\web\Request;
 
 /**
  * Класс отображения
@@ -105,6 +106,11 @@ class View
             include $this->view_path;
         }else{
             throw new \Exception('File: ' . $this->view_path . ' not exist!');
+        }
+
+        if(Request::isAjax()){
+            echo ob_get_clean();
+            return;
         }
         $this->view =  ob_get_clean();
         /**

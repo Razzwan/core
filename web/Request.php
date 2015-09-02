@@ -11,6 +11,8 @@ use liw\core\validation\Is;
 
 class Request
 {
+    static private $languages = ['ru', 'en', 'ua'];
+
     /**
      * @var string основной маршрут
      */
@@ -29,7 +31,6 @@ class Request
     static private $ajax;
 
     static public function isAjax(){
-
         if(self::$ajax !==  null){
             return self::$ajax;
         }
@@ -51,7 +52,7 @@ class Request
          * отделяем все до знака ? и помещаем в переменную url
          */
         if ($request ===  null) $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        self::$route = urldecode($request);
+        self::$route = urldecode(Clean::url($request));
 
         self::getLang();
 
@@ -65,7 +66,7 @@ class Request
          */
         if (self::$route !== '/') {
             foreach(explode('/', self::$route) as $language){
-                if(strlen($language)==2){
+                if(strlen($language)==2 && in_array($language, self::$languages)){
                     self::$route = str_replace('/'.$language, '', self::$route); //вырезаем из route язык, чтоб не мешался
                     self::$lang = $language;
                 }
@@ -84,23 +85,6 @@ class Request
         if(!empty($_GET)) {
             self::$attr = array_merge(self::$attr, $_GET); //если массив GET не пуст, то добавляем его элементы в конец
         }                                                    //массива Request::$attr
-    }
-
-    /**
-     * @param $way array
-     * @return array
-     * @throws \Exception
-     */
-    static public function checkAllowedVariables($way){
-        if (isset($way['options'])){
-            $arr = self::$attr;
-            foreach ($way['options'] as $option => $regV ){
-                if (Is::regV(array_shift($arr), $regV) !== true){
-                    throw new \Exception('Variable <strong>' . $option . '</strong> does not comply!');
-                }
-            }
-
-        }
     }
 
 }

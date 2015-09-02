@@ -2,41 +2,36 @@
 namespace liw\core;
 
 use liw\core\web\Request;
+use liw\core\validation\Is;
 
 class Router
 {
-    static private $languages = ['ru', 'en', 'ua'];
-
+    /**
+     * Массив вида ['ActiveController', 'activeAction', 'r'=>['option1' => 'regV1', 'option2' => 'regV2', ...]]
+     * @var array
+     */
     static public $way;
 
-    static public function parseRequest($request, $ways)
-    {
-        $route = $request;
-        $arr = explode('/', $request);
-        $attr = [];
-        $options = isset($ways['options']) ? $ways['options'] : [];
-        while($route){
-            if(isset($ways[$route])){
-                if(count($attr) >= count($options)){
-                    Request::$route = $route;
-                    Request::$attr = $attr;
-                    self::$way = $ways[$route];
-                    return;
-                } else {
-                    throw new \Exception("Переданный массив данных меньше необходимого.");
+    static public function getWay($route, $ways){
+        if (isset($ways[$route])){
+            self::$way = $ways[$route];
+            if (isset($way['r'])){
+                $attr = Request::$attr;
+                if(count($ways['r']) > count($attr)){
+                    throw new \Exception("Ожидаемое количество переменных больше переданного.");
                 }
-            } else {
-                $last = array_pop($arr);
-                if(strlen($last) == 2 && in_array($last, self::$languages)){
-                    Request::$lang = $last;
-                } else {
-                    array_push($attr, $last);
+                foreach ($way['r'] as $option => $regV ){
+                    if (Is::regV(array_shift($attr), $regV) !== true){
+                        throw new \Exception('Variable <strong>' . $option . '</strong> does not comply!');
+                    }
                 }
-                $route = implode('/', $arr);
             }
+            return;
+        } else {
+            throw new \Exception("No route: " . $route);
         }
-        throw new \Exception("No route: " . $request);
     }
+
 
     static public function run(){
         $controller_route = '\web\controllers\\' . self::$way[0];

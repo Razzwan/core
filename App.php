@@ -46,9 +46,11 @@ class App
 
             Session::start();
 
-            Router::parseRequest(RequestNew::getRequest(), AccessDefault::getWays());
+            Request::getRequest();
 
             self::loadLanguage(Request::$lang);
+
+            Router::getWay(Request::$route, AccessDefault::getWays());
 
             Router::run();
         }
