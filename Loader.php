@@ -143,7 +143,7 @@ class Loader
     {
         if (file_exists($file)) {
             if(defined("DEVELOP") && DEVELOP === true){
-                require_once '/home/www/liw.loc/vendor/liw/core/develop/Dev.php';
+                require_once LIW_CORE . 'core/develop/Dev.php';
                 Dev::$dev['classes'][] = $file;
             }
             require $file;
