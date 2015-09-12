@@ -41,6 +41,12 @@ class View
     private $view_folder = '';
 
     /**
+     * @var string
+     * Лэйаут для текущего вида
+     */
+    static private $layout;
+
+    /**
      * задается <title>
      *
      * @var string
@@ -66,10 +72,18 @@ class View
      */
     private function __clone(){}
 
-    public static function getView()
+    public static function getView($layout = null)
     {
         if (null === self::$_view) {
             self::$_view = new self();
+            /**
+             * определяем текущий вид (лэйаут)
+             */
+            if($layout === null){
+                self::$layout = Liw::$config['def_layout'];
+            } else {
+                self::$layout = $layout;
+            }
         }
         return self::$_view;
     }
@@ -117,7 +131,7 @@ class View
          * нужен особый вывод ошибок, т.к. ошибка в лэйауте будет выводиться дважды, как обычная ошибка, и как ошибка
          * внутри вывода ошибки.
          */
-        require LIW_WEB . 'views/layouts/' . Liw::$config['def_layout'] . '.php'; //подключение layout
+        require LIW_WEB . 'views/layouts/' . self::$layout. '.php'; //подключение layout
     }
 
     /**

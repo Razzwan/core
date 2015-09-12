@@ -11,7 +11,7 @@ class Controller
      */
     public function render($view, $attributes = null)
     {
-        View::getView()->render($this->getClassFromPath(), $view, $attributes);
+        View::getView(isset($this->layout)?$this->layout:null)->render($this->getClassFromPath(), $view, $attributes);
     }
 
     /**
