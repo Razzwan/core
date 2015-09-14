@@ -1,7 +1,7 @@
 <?php
 namespace liw\core;
 
-use liw\core\access\AccessDefault;
+use liw\core\access\AccessMulti;
 use liw\core\web\Request;
 use liw\core\web\Session;
 
@@ -51,7 +51,7 @@ class App
 
             self::loadLanguage(Request::$lang);
 
-            Router::getWay(Request::$route, AccessDefault::getWays());
+            Router::getWay(Request::$route, AccessMulti::getWays());
 
             Router::run();
         }

@@ -1,79 +1,43 @@
 <?php
-/**
- * Created by Razzwan.
- * Date: 26.08.15
- * Time: 15:36
- */
+namespace liw\core\access;
 
-namespace liw\access;
+use liw\core\Liw;
 
 class AccessMulti implements AccessInterface
 {
     /**
-     * Массив всех доступным маршрутов
+     * Массив всех имен для разрешений
      * @var array
      */
-    static private $ways = [];
+    static private $access_names = [
+        'articles'
+    ];
 
     /**
-     * Массив данных о текущем запросе
-     * @var array
-     */
-    static private $way = [];
-
-    /**
-     * Текущий путь без параметров
-     * @var string
-     */
-    static private $route;
-
-    /**
-     *
+     * Возвращает все разрешенные для данного пользователя маршруты
+     * Нужно добавить сохранение их в файл кэша
+     * @return array|mixed
+     * @throws \Exception
      */
     static public function getWays()
     {
+        if(Liw::$isGuest){
+            $file = LIW_WEB . 'config/ways/guest.php';
+            return self::loadFile($file);
+        } else {
+            $file = LIW_WEB . 'config/ways/login.php';
+            return array_merge(self::loadFile($file), self::filesFromLevels());
+        }
 
     }
 
-    /**
-     * Получает массив всех доступных маршрутов, исходя из прав доступа пользователя
-     * @return mixed
-     * @throws \Exception
-     */
-    static public function getRoute(){
-        if(Liw::$isGuest){
-            self::$ways = include LIW_WEB . "config/ways/guest.php";
-        }else{
-            self::$ways = include LIW_WEB . "config/ways/login.php";
-            if(!empty($_SESSION['user']['levels'])){
-                self::$ways = array_merge(self::$ways, self::filesFromLevels());
-            }
+    static private function loadFile($file)
+    {
+        if(is_file($file)){
+            return require_once $file;
+        } else {
+            throw new \Exception("File: " . $file . " not exist.");
         }
-
-        $arr = explode('?', Clean::url($_SERVER['REQUEST_URI']));
-        self::$route = Request::$route = array_shift($arr);
-
-        foreach(explode('/', self::$route) as $str){
-            if(strlen($str)==2){
-                $language = $str;
-                self::$route = str_replace('/'.$language, '', self::$route);
-                break;
-            }
-        }
-
-        if (isset(self::$ways[self::$route])) {
-            self::$way = self::$ways[self::$route];
-            if(!empty($_GET)){
-                self::$way['attributes'] = $_GET;
-            }
-            if(!empty($language)){
-                self::$way['language'] = $language;
-            }
-            var_dump(self::$way);
-            exit;
-            return self::$way;
-        }
-        return false;
     }
 
     /**
@@ -81,15 +45,23 @@ class AccessMulti implements AccessInterface
      * @return array
      */
     static private function filesFromLevels(){
-        /*$str = $_SESSION['user']['levels'];
-        Liw::$user['levels']['article'] = substr($str, 0, 1);*/
-        $levels = preg_split('//u', $_SESSION['user']['levels'], -1,PREG_SPLIT_NO_EMPTY);
-        Liw::$user['levels'] = $levels;
-        $arr = [];
-        for ($i=1; $i<=$levels[0]; $i++){
-            $add_arr = include LIW_WEB ."config/ways/article/" . $i .".php";
-            $arr = array_merge($arr, $add_arr);
+
+        if (isset($_SESSION['user']['levels']) && $_SESSION['user']['levels']){
+
+            $str = $_SESSION['user']['levels'];
+            $levels = explode('.', $str);
+            $arr = [];
+
+            for($i=0; $i<count($levels); $i++){
+                Liw::$user['level'][self::$access_names[$i]] = $levels[$i];
+                for ($j=1; $j<=$levels[$i]; $j++){
+                    $file = LIW_WEB ."config/ways/" . self::$access_names[$i] . "/" . $j .".php";
+                    $add_arr = self::loadFile($file);
+                    $arr = array_merge($arr, $add_arr);
+                }
+            }
+            return $arr;
         }
-        return $arr;
+
     }
 }
