@@ -10,7 +10,7 @@ class AccessMulti implements AccessInterface
      * @var array
      */
     static private $access_names = [
-        'articles'
+        'article'
     ];
 
     /**
@@ -36,7 +36,7 @@ class AccessMulti implements AccessInterface
         if(is_file($file)){
             return require_once $file;
         } else {
-            throw new \Exception("File: " . $file . " not exist.");
+            return false;
         }
     }
 
@@ -56,8 +56,12 @@ class AccessMulti implements AccessInterface
                 Liw::$user['level'][self::$access_names[$i]] = $levels[$i];
                 for ($j=1; $j<=$levels[$i]; $j++){
                     $file = LIW_WEB ."config/ways/" . self::$access_names[$i] . "/" . $j .".php";
-                    $add_arr = self::loadFile($file);
-                    $arr = array_merge($arr, $add_arr);
+                    if(($add_arr = self::loadFile($file))){
+                        $arr = array_merge($arr, $add_arr);
+                    } else {
+                        continue;
+                    }
+
                 }
             }
             return $arr;

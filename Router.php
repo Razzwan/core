@@ -34,15 +34,16 @@ class Router
 
 
     static public function run(){
-        $controller_route = '\web\controllers\\' . self::$way[0];
+        $way_arr = explode(':', self::$way[0]);
+        $controller_route = '\web\controllers\\' . $way_arr[0] . 'Controller';
         if (!class_exists($controller_route)) {
-            throw new \Exception(Liw::$lang['message']['no_controller'] . self::$way[0]);
+            throw new \Exception(Liw::$lang['message']['no_controller'] . $way_arr[0] . 'Controller');
         }
         $controller_obj = new $controller_route();
-        if (!method_exists($controller_obj, self::$way[1])) {
+        if (!method_exists($controller_obj, $way_arr[1] . 'Action')) {
             throw new \Exception(Liw::$lang['message']['no_action'] .
-                '<strong>' . self::$way[1] . '</strong> in controller <strong>' .
-                self::$way[0] . '</strong>');
+                '<strong>' . $way_arr[1] . 'Action' . '</strong> in controller <strong>' .
+                $way_arr[0] . 'Controller' . '</strong>');
         }
 
         /**
@@ -54,7 +55,7 @@ class Router
         /**
          * запускает метод контроллера с параметрами
          */
-        call_user_func_array([$controller_obj, self::$way[1]], Request::$attr);
+        call_user_func_array([$controller_obj, $way_arr[1] . 'Action'], Request::$attr);
         /**
          * Если существует метод after, то запускаем его после действия
          */
