@@ -156,7 +156,7 @@ class View
         }
     }
 
-    public function twig($folder, $view)
+    public function twig($folder, $view, $attr = [])
     {
         /**
          * Подгружаем папку с шаблонами
@@ -164,12 +164,17 @@ class View
         \Twig_Autoloader::register();
         $loader = new \Twig_Loader_Filesystem(LIW_WEB . 'views/' . $folder);
         $loader->addPath(LIW_WEB . "views/layouts", 'layouts');
+        if (defined("DEVELOP") && DEVELOP === true){
+            $debug = true;
+        } else {
+            $debug = false;
+        }
         $twig = new \Twig_Environment($loader, array(
-            'debug' => true));
+            'debug' => $debug));
 
         $twig->addExtension(new \Twig_Extension_Debug());
 
-        return $twig->loadTemplate($view . '.html.twig');
+        echo $twig->render($view . '.html.twig', $attr);
     }
 
 }
