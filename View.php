@@ -156,4 +156,19 @@ class View
         }
     }
 
+    public function twig($folder, $view)
+    {
+        /**
+         * Подгружаем папку с шаблонами
+         */
+        $loader = new \Twig_Loader_Filesystem([LIW_WEB . "views/$folder"]);
+        $loader->addPath(LIW_WEB . 'views/layouts/', 'layouts');
+        $twig = new \Twig_Environment($loader, array(
+            'debug' => true));
+
+        $twig->addExtension(new \Twig_Extension_Debug());
+
+        return $twig->loadTemplate($view . '.php');
+    }
+
 }
