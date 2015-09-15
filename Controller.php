@@ -1,8 +1,6 @@
 <?php
 namespace liw\core;
 
-use
-
 class Controller
 {
     /**
@@ -44,18 +42,19 @@ class Controller
         return $folder;
     }
 
-    public function twig()
+    public function twig($folder = '', $view = '')
     {
         /**
-         * Подгружаем папке с шаблонами
+         * Подгружаем папку с шаблонами
          */
-        $loader = new \Twig_Loader_Filesystem([WEB_PATH . "template", CORE_BASE . "view"]);
+        $loader = new \Twig_Loader_Filesystem([LIW_WEB . "views/$folder"]);
+        $loader->addPath(LIW_WEB . 'views/layouts/', 'layouts');
         $twig = new \Twig_Environment($loader, array(
             'debug' => true));
 
         $twig->addExtension(new \Twig_Extension_Debug());
 
-        return $twig->loadTemplate($view);
+        return $twig->loadTemplate($view . '.php');
 
     }
 
