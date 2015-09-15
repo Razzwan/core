@@ -1,6 +1,8 @@
 <?php
 namespace liw\core;
 
+use
+
 class Controller
 {
     /**
@@ -40,6 +42,21 @@ class Controller
         $path = get_class($this);
         $folder = str_replace('controller', '', substr(strrchr(strtolower($path), "\\"), 1));
         return $folder;
+    }
+
+    public function twig()
+    {
+        /**
+         * Подгружаем папке с шаблонами
+         */
+        $loader = new \Twig_Loader_Filesystem([WEB_PATH . "template", CORE_BASE . "view"]);
+        $twig = new \Twig_Environment($loader, array(
+            'debug' => true));
+
+        $twig->addExtension(new \Twig_Extension_Debug());
+
+        return $twig->loadTemplate($view);
+
     }
 
 }

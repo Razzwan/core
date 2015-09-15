@@ -32,7 +32,6 @@ class Router
         }
     }
 
-
     static public function run(){
         $way_arr = explode(':', self::$way[0]);
         $controller_route = '\web\controllers\\' . $way_arr[0] . 'Controller';
