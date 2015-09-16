@@ -1,31 +1,20 @@
-# Прочти меня #
-
-Мини фрэймворк для обучения. Присоединяйся! ;)
+#LIW - Life Is Wonderful! ;)
 
 ## Установка: ##
 
-### 1. при помощи composer (предпочтительно): ###
-1. Установите composer: https://getcomposer.org/doc/00-intro.md
+### 1. Включение в зависимости composer:
+1. В файле composer.json вашего проекта укажите зависимость:
+##### require : {"liw/core" : "~1.1"}
 
-2. Перейдите при помощи терминала(linux/osx) или GitBash(windows) в папку доступную из веб (www, public...):
-##### cd /path/to/public/folder #####
+### 2. Установка вместе с проектом:
+1. Установите [composer](https://getcomposer.org/doc/00-intro.md)
 
-3. Выполните в терминале(linux/osx) или GitBash(windows) команду:
-##### php composer.phar create-project liw/liw-project newProject #####
+2. Перейдите в папку доступную из веб:
+##### cd /path/to/web/folder
+
+3. Выполните команду:
+##### php composer.phar create-project liw/liw-project newProject
 
 Composer установит проект в папку newProject.
+
 Можно работать.
-
-### 2. из архива: ###
-1. Скачайте архив.
-
-2. Распакуйте в рабочую директорию.
- 
-Можно работать.
-
-
-## Обновление компонентов: ##
-Выполните в терминале(linux/osx) или GitBash(windows) команду (нужен установленный composer):
-##### php composer.phar update #####
-
-Composer установит последние версии компонентов.
