@@ -1,6 +1,8 @@
 <?php
 namespace liw\core;
 
+use liw\core\web\Request;
+
 class Router
 {
     private $rules = []; //Правила для роутера
@@ -33,15 +35,19 @@ class Router
      */
     private function parseURL()
     {
+        $this->url = urldecode($this->url);
+
         foreach ($this->rules as $url => $param) {
-            $this->url = urldecode($this->url);
 
             if (preg_match("#^{$url}$#ui", $this->url, $match)) {
                 array_shift($match);
-                $this->result['attr'] = $match;
+                Request::$attr = $match;
+                $this->action = $param;
                 return $this->action = $param;
             }
+
         }
+
 
     }
 
