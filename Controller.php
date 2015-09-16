@@ -42,9 +42,9 @@ class Controller
         return $folder;
     }
 
-    public function twig($view)
+    public function twig($view, $attr = [])
     {
-        View::getView(isset($this->layout)?$this->layout:null)->twig($this->getClassFromPath(), $view);
+        View::getView(isset($this->layout)?$this->layout:null)->twig($this->getClassFromPath(), $view, $attr);
     }
 
 }

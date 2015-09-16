@@ -158,6 +158,7 @@ class View
 
     public function twig($folder, $view, $attr = [])
     {
+        if($view == '') throw new \Exception('Переменная вида не определена.');
         /**
          * Подгружаем папку с шаблонами
          */
@@ -174,7 +175,10 @@ class View
 
         $twig->addExtension(new \Twig_Extension_Debug());
 
-        echo $twig->render($view . '.html.twig', $attr);
+        if(preg_match("#^\w+\.twig$#ui", $view) != 1){
+            $view = $view . '.twig';
+        }
+        echo $twig->render($view, $attr);
     }
 
 }

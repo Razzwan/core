@@ -120,7 +120,9 @@ class Model extends BaseModel
         if($num_rows == 0){
             return 0;
         } elseif($num_rows==1){
-            return $this->fields = $result->fetch_assoc();
+            $result = $result->fetch_assoc();
+            array_push($this->fields, $result);
+            return $this->fields = array_merge($this->fields, $result);
         } else {
             $i = 0;
             while($str = $result->fetch_assoc()){
