@@ -3,19 +3,19 @@
 ## Установка: ##
 
 ### 1. Включение в зависимости composer: ###
-1. В файле composer.json вашего проекта укажите зависимость:
+* В файле composer.json вашего проекта укажите зависимость:
 ```
 require : {"liw/core" : "~1.1"}
 ```
 
 ### 2. Установка вместе с проектом: ###
-1. Установите [composer](https://getcomposer.org/doc/00-intro.md)
+* Установите [composer](https://getcomposer.org/doc/00-intro.md)
 
-2. Перейдите в папку доступную из веб:
+* Перейдите в папку доступную из веб:
 ```
 cd /path/to/web/folder
 ```
-3. Выполните команду:
+* Выполните команду:
 ```
 php composer.phar create-project liw/liw-project newProject
 ```
