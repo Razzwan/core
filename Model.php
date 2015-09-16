@@ -40,6 +40,35 @@ class Model extends BaseModel
      */
     private $type_param = '';
 
+    public function __get($var)
+    {
+        if (isset($this->fields[$var])){
+            return $this->fields[$var];
+        } else {
+            throw new \Exception('Неопределенная переменная ' . $var);
+        }
+    }
+
+    public function __set($var, $value)
+    {
+        $this->fields[$var] = $value;
+    }
+
+    public function __unset($var)
+    {
+        unset($this->fields[$var]);
+    }
+
+    public function __isset($var)
+    {
+        return isset($this->fields[$var]);
+    }
+
+    public function __empty($var)
+    {
+        return empty($this->fields[$var]);
+    }
+
     /**
      * создаем подключение к базе данных, если оно еще отсутствует.
      */
@@ -47,7 +76,7 @@ class Model extends BaseModel
     {
         $this->bd = Connect::getConnection();
     }
-    
+
     public function query($sql, $bind_param = [])
     {
         $this->connect();
