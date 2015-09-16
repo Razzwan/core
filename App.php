@@ -7,6 +7,9 @@ use liw\core\web\Session;
 
 class App
 {
+
+    protected static $router;
+
     /**
      * Загружаем язык
      * @param null|string $lang
@@ -51,9 +54,7 @@ class App
 
             self::loadLanguage(Request::$lang);
 
-            Router::getWay(Request::$route, AccessMulti::getWays());
-
-            Router::run();
+            self::run(new Router(include LIW_WEB . "config/ways/all.php"));
         }
         catch (\Exception $e) {
             self::show_errors($e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
@@ -82,5 +83,38 @@ class App
             ]);
         }
         exit;
+    }
+
+    static public function run($router)
+    {
+        $router = $router->run();
+
+        $controller_route = '\web\controllers\\' . $router['action'][0] . 'Controller';
+        if (!class_exists($controller_route)) {
+            throw new \Exception(Liw::$lang['message']['no_controller'] . $router['action'][0] . 'Controller');
+        }
+        $controller_obj = new $controller_route();
+        if (!method_exists($controller_obj, $router['action'][1] . 'Action')) {
+            throw new \Exception(Liw::$lang['message']['no_action'] .
+                '<strong>' . $router['action'][1] . 'Action' . '</strong> in controller <strong>' .
+                $router['action'][0] . 'Controller' . '</strong>');
+        }
+
+        /**
+         * Если существует метод before, то запускаем его перед действием
+         */
+        if (method_exists($controller_obj, "before")) {
+            call_user_func_array([$controller_obj, "before"], Request::$attr);
+        }
+        /**
+         * запускает метод контроллера с параметрами
+         */
+        call_user_func_array([$controller_obj, $router['action'][1] . 'Action'], Request::$attr);
+        /**
+         * Если существует метод after, то запускаем его после действия
+         */
+        if (method_exists($controller_obj, "after")) {
+            call_user_func_array([$controller_obj, "after"], Request::$attr);
+        }
     }
 }

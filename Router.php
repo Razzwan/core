@@ -2,64 +2,117 @@
 namespace liw\core;
 
 use liw\core\web\Request;
-use liw\core\validation\Is;
 
 class Router
 {
-    /**
-     * Массив вида ['ActiveController', 'activeAction', 'r'=>['option1' => 'regV1', 'option2' => 'regV2', ...]]
-     * @var array
-     */
-    static public $way;
+    private $rules = []; //Правила для роутера
+    private $url = []; //Адресная строка
+    private $action = []; //Контроллер и метод
+    private $result = [];
 
-    static public function getWay($route, $ways){
-        if (isset($ways[$route])){
-            self::$way = $ways[$route];
-            if (isset($way['r'])){
-                $attr = Request::$attr;
-                if(count($ways['r']) > count($attr)){
-                    throw new \Exception("Ожидаемое количество переменных больше переданного.");
-                }
-                foreach ($way['r'] as $option => $regV ){
-                    if (Is::regV(array_shift($attr), $regV) !== true){
-                        throw new \Exception('Variable <strong>' . $option . '</strong> does not comply!');
-                    }
-                }
-            }
-            return;
-        } else {
-            throw new \Exception("No route: " . $route);
+    /**
+     * Добавление правил для роутинга
+     *
+     * @param array $rules
+     */
+    public function __construct($rule)
+    {
+        foreach ($rule as $url => $param) {
+            $this->rules[$url] = $param;
         }
     }
 
-    static public function run(){
-        $way_arr = explode(':', self::$way[0]);
-        $controller_route = '\web\controllers\\' . $way_arr[0] . 'Controller';
-        if (!class_exists($controller_route)) {
-            throw new \Exception(Liw::$lang['message']['no_controller'] . $way_arr[0] . 'Controller');
+    /**
+     * @return string
+     */
+    private function breakUrl()
+    {
+        $this->url = $_SERVER['REQUEST_URI'];
+    }
+
+    /**
+     * Провека на совпадение адресной c справилом
+     */
+    private function parseURL()
+    {
+        $this->url = urldecode($this->url);
+
+        foreach ($this->rules as $url => $param) {
+
+            if (preg_match("#^{$url}$#ui", $this->url, $match)) {
+                array_shift($match);
+                Request::$attr = $match;
+                $this->action = $param;
+                return $this->action = $param;
+            }
+
         }
-        $controller_obj = new $controller_route();
-        if (!method_exists($controller_obj, $way_arr[1] . 'Action')) {
-            throw new \Exception(Liw::$lang['message']['no_action'] .
-                '<strong>' . $way_arr[1] . 'Action' . '</strong> in controller <strong>' .
-                $way_arr[0] . 'Controller' . '</strong>');
+
+
+    }
+
+    /**
+     * Разбиваем сторку с названием контроллера и метода
+     *
+     * @param $action
+     */
+    private function parseAction()
+    {
+        $this->result['action'] = explode("::", $this->action['action']);
+        $this->result['param'] = explode("/", trim($this->url, '/'));
+    }
+
+    /**
+     * Проверяем метод запроса на совпадение с правилом
+     *
+     * @return bool
+     */
+    private function getMethod()
+    {
+        if (strtoupper($this->action['method']) == $_SERVER['REQUEST_METHOD']) {
+            return true;
+        }
+    }
+
+    /**
+     * Запус роутера
+     *
+     * @return bool
+     */
+    public function run()
+    {
+        /**
+         * проверка существуют ли правила
+         */
+        if (empty($this->rules)) {
+            return false;
         }
 
         /**
-         * Если существует метод before, то запускаем его перед действием
+         * Получаем массив адресной строки
          */
-        if(method_exists($controller_obj, "before")){
-            call_user_func_array([$controller_obj, "before"], Request::$attr);
-        }
+        $this->breakUrl();
+
         /**
-         * запускает метод контроллера с параметрами
+         * Проверяем url с правилами
          */
-        call_user_func_array([$controller_obj, $way_arr[1] . 'Action'], Request::$attr);
-        /**
-         * Если существует метод after, то запускаем его после действия
-         */
-        if(method_exists($controller_obj, "after")){
-            call_user_func_array([$controller_obj, "after"], Request::$attr);
+        if (!is_array($this->parseURL())) {
+            return false;
         }
+
+        /**
+         * Проверяем метод запроса
+         */
+        if (!$this->getMethod()) {
+            return false;
+        }
+
+        /**
+         * Узнаем контроллер и метод
+         */
+        $this->parseAction();
+
+        return $this->result;
     }
 }
+
