@@ -55,13 +55,6 @@ class App
             self::loadLanguage(Request::$lang);
 
             self::run(new Router(include LIW_WEB . "config/ways/all.php"));
-            //Router::getWay(Request::$route, AccessMulti::getWays());
-
-            //Router::run();
-
-            Router::getWay(Request::$route, AccessMulti::getWays());
-
-            Router::run();
         }
         catch (\Exception $e) {
             self::show_errors($e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
