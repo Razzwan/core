@@ -15,7 +15,6 @@ require : {"liw/core" : "~1.1"}
 ```
 cd /path/to/web/folder
 ```
-
 3. Выполните команду:
 ```
 php composer.phar create-project liw/liw-project newProject
