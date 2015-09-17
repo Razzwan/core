@@ -3,10 +3,18 @@ namespace liw\core;
 
 class Lang
 {
-    static public $uage = [];
+    static private $_ = [];
 
-    static public function add($array)
+    static public function add($arr)
     {
-        self::$uage = array_merge(self::$uage, $array);
+        self::$_ = array_merge(self::$_, $arr);
+    }
+
+    static public function uage($_)
+    {
+        if(isset(self::$_[$_])){
+            return self::$_[$_];
+        }
+        return '?' . $_ . '?';
     }
 }

@@ -77,7 +77,7 @@ class App
         if (!defined('DEVELOP') || !DEVELOP){
             //добавить логирование
             $view->render('main', 'error', [
-                'error' => Lang::$uage['error_404']
+                'error' => Lang::uage('error_404')
             ]);
         } else {
             $view->render('main', 'error', [

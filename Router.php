@@ -117,11 +117,11 @@ class Router
         $way_arr = explode(':', self::$way[0]);
         $controller_route = '\web\controllers\\' . $way_arr[0] . 'Controller';
         if (!class_exists($controller_route)) {
-            throw new \Exception(Lang::$uage['error_no_controller'] . $way_arr[0] . 'Controller');
+            throw new \Exception(Lang::uage('error_no_controller') . $way_arr[0] . 'Controller');
         }
         $controller_obj = new $controller_route();
         if (!method_exists($controller_obj, $way_arr[1] . 'Action')) {
-            throw new \Exception(Lang::$uage['error_no_action'] .
+            throw new \Exception(Lang::uage('error_no_action') .
                 '<strong>' . $way_arr[1] . 'Action' . '</strong> in controller <strong>' .
                 $way_arr[0] . 'Controller' . '</strong>');
         }
