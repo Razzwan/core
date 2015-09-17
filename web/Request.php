@@ -26,7 +26,7 @@ class Request
     /**
      * @var array массив переданных скрипту параметров
      */
-    static public $attr;
+    static public $attr = [];
 
     /**
      * @var string (length = 2) текущий запрошеный язык, вырезается из $route,
@@ -74,6 +74,7 @@ class Request
         self::$route = urldecode(Clean::url($request));
 
         self::getLang();
+        self::getGet();
     }
 
     static private function getLang()
@@ -89,6 +90,13 @@ class Request
                     if (self::$route == '') self::$route = '/';
                 }
             }
+        }
+    }
+
+    static private function getGet()
+    {
+        if(!empty($_GET)){
+            self::$attr = $_GET;
         }
     }
 

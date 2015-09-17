@@ -18,54 +18,99 @@ class Router
      */
     static public $way;
 
-    static private $rv = [
-        'd' => '#^[0-9]+$#'
+    /**
+     * @var array позиции переменных в строке
+     */
+    static private $var_positions = [];
+
+    /**
+     * @var array массив параметров, переданных в урл через слеши и указанные в ключе массива $ways
+     */
+    static public $attr = [];
+
+    /**
+     * @var array регулярные выражения доступные из коробки. Доступны по ключю
+     */
+    static private $reg_exps = [
+        'i' => "[0-9]+",
+        's' => "\w+",
+        'd' => "[0-9\.]+",
     ];
 
-    static public function getWay($route, $ways){
-        if (isset($ways[$route])){
-            self::$way = $ways[$route];
-            if (isset($way['r'])){
-                $attr = Request::$attr;
-                if(count($ways['r']) > count($attr)){
-                    throw new \Exception("Ожидаемое количество переменных больше переданного.");
-                }
-                foreach ($way['r'] as $option => $regV ){
-                    if (Is::regV(array_shift($attr), $regV) !== true){
-                        throw new \Exception('Variable <strong>' . $option . '</strong> does not comply!');
+    /**
+     * @param $route
+     * @param $ways
+     * @return array
+     * @throws \Exception
+     */
+    static public function getWay($route, $ways)
+    {
+        foreach(array_keys($ways) as $way){
+            if(mb_ereg_match(self::createRegV($way), $route)){
+                /**
+                 * Возвращаем название контроллера и метода в нем
+                 */
+                self::$way = $ways[$way];
+
+                if(count(self::$way)>=2){
+                    if(!array_key_exists('method', self::$way)){
+                        self::$way['method'] = self::$way[1];
                     }
                 }
+                if(isset(self::$way['method']) && !self::checkMethod(self::$way['method'])){
+                    throw new \Exception('Методе передачи данных (GET, POST...) не соответствет указанному в файле роутинга.');
+                }
+                if(!array_key_exists('action', self::$way)){
+                    if(isset(self::$way[0])){
+                        self::$way['action'] = self::$way[0];
+                    } else {
+                        throw new \Exception('Ошибка синтаксиса в фале роутинга.');
+                    }
+                }
+                /**
+                 * Возвращаем массив, ключи которого
+                 */
+                Request::$attr = array_merge(self::$attr = array_intersect_key(explode('/', $route), self::$var_positions), Request::$attr);
+                return self::$way;
+
             }
-            return;
-        } else {
-            throw new \Exception("No route: " . $route);
         }
+        throw new \Exception("Нет такого маршрута: " . $route);
     }
 
-    static private function getRegFromRoute()
+    /**
+     * Проверяем соответствует ли указанный в маршрутизации метод реальному методу передаваемых данных
+     * @param $method
+     * @return bool
+     */
+    static private function checkMethod($method)
     {
-        $arr = explode('/', $route);
-        $fragment = array_shift($arr);
-        while($fragment){
-            $length = mb_strlen($fragment, "UTF-8");
-            strncasecmp ($fragment, $ways[0], $length);
-            $fragment = array_shift($arr);
+        if (is_array($method)){
+            if(in_array($_SERVER['REQUEST_METHOD'], $method)){
+                return true;
+            }
+        } else {
+            if(strtoupper($method) === $_SERVER['REQUEST_METHOD']){
+                return true;
+            }
         }
+        return false;
     }
 
     static public function createRegV($route) //strncasecmp
     {
         $arr = explode('/', $route);
         for ($i=0; $i<count($arr); $i++){
-            if ($arr[$i][0] === "{"){
-                if($arr[$i][1] === ":"){
-                    $arr[$i] = self::$rv[mb_substr($arr[$i], 2, mb_strlen($arr[$i]) - 3)];
+            if (mb_substr($arr[$i], 0, 1, "UTF-8") === "{"){
+                self::$var_positions[$i] = $i;
+                if(mb_substr($arr[$i], 1, 1, "UTF-8") === ":"){
+                    $arr[$i] = self::$reg_exps[mb_substr($arr[$i], 2, 1, "UTF-8")];
                 } else {
-                    $arr[$i] = mb_substr($arr[$i], 1, mb_strlen($arr[$i]) - 2);
+                    $arr[$i] = mb_substr($arr[$i], 1, mb_strlen($arr[$i], "UTF-8") - 2, "UTF-8");
                 }
             }
         }
-        return implode($arr);
+        return "^" .implode('/', $arr) . "$";
     }
 
     static public function run(){

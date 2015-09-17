@@ -1,6 +1,7 @@
 <?php
 namespace liw\core;
 
+use liw\core\access\AccessDefault;
 use liw\core\access\AccessMulti;
 use liw\core\web\Request;
 use liw\core\web\Session;
