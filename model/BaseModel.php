@@ -15,7 +15,10 @@ class BaseModel
     /**
      * Лэйблы для переменных из fields хранятся здесь
      */
-    public function labelFields(){return[];}
+    public function labels()
+    {
+        return [];
+    }
 
     /**
      * Хранит текст ошибки, или false, если ошибка отсутствует
@@ -32,6 +35,14 @@ class BaseModel
         return [];
     }
 
+    private function getLabel($field)
+    {
+        if(isset($this->labels()[$field])){
+            return $this->labels()[$field];
+        }
+        return $field;
+    }
+
     /**
      * Если была ошибка, то в поле $this->error заполнится здесь
      * @return bool true, если валидация пройдена и false в противном случае
@@ -42,18 +53,18 @@ class BaseModel
                 foreach($arrRules as $key => $value){
                     if(is_int($value)){
                         if(($error = call_user_func('liw\core\validation\Is::' . $key, $this->fields[$field], $value)) !== true){
-                            $this->error = Liw::$lang['error']['field'] . is_null($this->labelFields()[$field]) . Liw::$lang['error'][$error] . $value;
+                            $this->error = Liw::$lang['error']['field'] . $this->getLabel($field) . Liw::$lang['error'][$error] . $value;
                             return false;
                         }
                     }else{
                         if(method_exists($this, $value)){
                             if(($error = call_user_func([$this, $value], $field, $this->fields[$field])) !== true){
-                                $this->error = Liw::$lang['error']['field'] . $this->labelFields()[$field] . Liw::$lang['error'][$error];
+                                $this->error = Liw::$lang['error']['field'] . $this->getLabel($field) . Liw::$lang['error'][$error];
                                 return false;
                             }
                         }else{
                             if(($error = call_user_func('liw\core\validation\Is::' .  $value, $this->fields[$field])) !== true){
-                                $this->error = Liw::$lang['error']['field'] . $this->labelFields()[$field] . Liw::$lang['error'][$error];
+                                $this->error = Liw::$lang['error']['field'] . $this->getLabel($field) . Liw::$lang['error'][$error];
                                 return false;
                             }
                         }
