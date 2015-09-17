@@ -15,7 +15,7 @@ class AccessDefault implements AccessInterface
         if(Liw::$isGuest){
             $file = LIW_WEB . 'config/ways/guest.php';
         } else {
-            $file = LIW_WEB . 'config/ways/login.php';
+            $file = LIW_WEB . 'config/ways/user.php';
         }
 
         if(is_file($file)){

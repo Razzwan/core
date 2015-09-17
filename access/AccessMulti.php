@@ -25,7 +25,7 @@ class AccessMulti implements AccessInterface
             $file = LIW_WEB . 'config/ways/guest.php';
             return self::loadFile($file);
         } else {
-            $file = LIW_WEB . 'config/ways/login.php';
+            $file = LIW_WEB . 'config/ways/user.php';
             return array_merge(self::loadFile($file), self::filesFromLevels());
         }
 
