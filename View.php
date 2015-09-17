@@ -175,7 +175,7 @@ class View
 
         $twig->addExtension(new \Twig_Extension_Debug());
 
-        if(preg_match("#^\w+\.twig$#ui", $view) != 1){
+        if(preg_match("#^[\w\.\-]+\.twig$#ui", $view) != 1){
             $view = $view . '.twig';
         }
         echo $twig->render($view, $attr);
