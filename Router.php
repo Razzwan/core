@@ -46,7 +46,14 @@ class Router
     static public function getWay($route, $ways)
     {
         foreach(array_keys($ways) as $way){
-            if(mb_ereg_match(self::createRegV($way), $route)){
+            $regs = [];
+            if(mb_ereg(self::createRegV($way), $route, $regs)){
+                if(count($regs)>1){
+                    array_shift($regs);
+                    self::$attr = $regs;
+                } else {
+                    self::$attr = array_intersect_key(explode('/', $route), self::$var_positions);
+                }
                 /**
                  * Возвращаем название контроллера и метода в нем
                  */
@@ -70,7 +77,7 @@ class Router
                 /**
                  * Возвращаем массив, ключи которого
                  */
-                Request::$attr = array_merge(self::$attr = array_intersect_key(explode('/', $route), self::$var_positions), Request::$attr);
+                Request::$attr = array_merge(self::$attr, Request::$attr);
                 return self::$way;
 
             }
@@ -114,7 +121,7 @@ class Router
     }
 
     static public function run(){
-        $way_arr = explode(':', self::$way[0]);
+        $way_arr = explode('::', self::$way[0]);
         $controller_route = '\web\controllers\\' . $way_arr[0] . 'Controller';
         if (!class_exists($controller_route)) {
             throw new \Exception(Liw::$lang['message']['no_controller'] . $way_arr[0] . 'Controller');
