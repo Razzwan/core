@@ -24,12 +24,6 @@ class Model extends BaseModel
     private $sql;
 
     /**
-     * id записи в базе данных, если запись одна
-     * @var integer
-     */
-    public $id;
-
-    /**
      * Параметры которые нужно забиндить к запросу к БД
      * @var array
      */
