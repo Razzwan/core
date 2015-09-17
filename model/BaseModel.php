@@ -1,7 +1,7 @@
 <?php
 namespace liw\core\model;
 
-use liw\core\Liw;
+use liw\core\Lang;
 use liw\core\web\Session;
 
 class BaseModel
@@ -53,18 +53,18 @@ class BaseModel
                 foreach($arrRules as $key => $value){
                     if(is_int($value)){
                         if(($error = call_user_func('liw\core\validation\Is::' . $key, $this->fields[$field], $value)) !== true){
-                            $this->error = Liw::$lang['error']['field'] . $this->getLabel($field) . Liw::$lang['error'][$error] . $value;
+                            $this->error = Lang::$uage['error_field'] . $this->getLabel($field) . Lang::$uage['error_'.$error] . $value;
                             return false;
                         }
                     }else{
                         if(method_exists($this, $value)){
                             if(($error = call_user_func([$this, $value], $field, $this->fields[$field])) !== true){
-                                $this->error = Liw::$lang['error']['field'] . $this->getLabel($field) . Liw::$lang['error'][$error];
+                                $this->error = Lang::$uage['error_field'] . $this->getLabel($field) . Lang::$uage['error_'.$error];
                                 return false;
                             }
                         }else{
                             if(($error = call_user_func('liw\core\validation\Is::' .  $value, $this->fields[$field])) !== true){
-                                $this->error = Liw::$lang['error']['field'] . $this->getLabel($field) . Liw::$lang['error'][$error];
+                                $this->error = Lang::$uage['error_field'] . $this->getLabel($field) . Lang::$uage['error_'. $error];
                                 return false;
                             }
                         }

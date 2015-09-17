@@ -27,8 +27,6 @@ class Liw
 {
     static public $config = [];
 
-    static public $lang   = [];
-
     static public $isGuest = true;
 
     static public $user = [];
