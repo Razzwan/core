@@ -6,29 +6,44 @@
  */
 namespace liw\core\web;
 
+use liw\core\Liw;
 use liw\core\validation\Clean;
 
 class Request
 {
-    static private $languages = ['ru', 'en', 'ua'];
-
     /**
-     * @var string основной маршрут
+     * Массив доступных в приложении языков (указывается в конфиге,
+     *  соответствует физическому наличии одноименному файлу .php в app/config/languages
+     * @var array
      */
-    static public  $route = '/';
+    static private $languages;
 
     /**
-     * @var array массив передаваемых параметров
+     * @var string основной маршрут, полученный из uri
      */
-    static public  $attr = [];
+    static public  $route;
 
     /**
-     * @var string (length = 2) текущий запрошеный язык
+     * @var array массив переданных скрипту параметров
+     */
+    static public $attr;
+
+    /**
+     * @var string (length = 2) текущий запрошеный язык, вырезается из $route,
+     * если совпадает с одним из разрешенных языков в $languages
      */
     static public  $lang;
 
+    /**
+     * Хранит информацио о виде запроса: ajax/не ajax
+     * @var boolean
+     */
     static private $ajax;
 
+    /**
+     * Возвращает информацию о виде запроса: ajax/не ajax
+     * @return bool
+     */
     static public function isAjax(){
         if(self::$ajax !==  null){
             return self::$ajax;
@@ -48,14 +63,17 @@ class Request
     static public function getRequest($request = null)
     {
         /**
-         * отделяем все до знака ? и помещаем в переменную url
+         * Вытаскиваем массив разрешенных языков из конфига
+         */
+        self::$languages = Liw::$config['languages'];
+
+        /**
+         * отделяем все до знака "?" и/или "#" и помещаем в переменную self::$route
          */
         if ($request ===  null) $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         self::$route = urldecode(Clean::url($request));
 
         self::getLang();
-
-        self::getAttr();
     }
 
     static private function getLang()
@@ -64,26 +82,14 @@ class Request
          * если есть переменная из 2х символов, то считаем это языком и сохраняем
          */
         if (self::$route !== '/') {
-            foreach(explode('/', self::$route) as $language){
+            foreach(explode('/', trim(self::$route, '/')) as $language){
                 if(strlen($language)==2 && in_array($language, self::$languages)){
                     self::$route = str_replace('/'.$language, '', self::$route); //вырезаем из route язык, чтоб не мешался
                     self::$lang = $language;
+                    if (self::$route == '') self::$route = '/';
                 }
             }
         }
-    }
-
-    static private function getAttr()
-    {
-        /**
-         * символом '/=' отделены переменные
-         */
-        $arr = explode('/=', self::$route);
-        self::$route = array_shift($arr);                  // отрезали и сохранили основную часть url
-        self::$attr = count($arr) ? $arr : [];
-        if(!empty($_GET)) {
-            self::$attr = array_merge(self::$attr, $_GET); //если массив GET не пуст, то добавляем его элементы в конец
-        }                                                    //массива Request::$attr
     }
 
 }

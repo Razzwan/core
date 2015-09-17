@@ -4,6 +4,12 @@ namespace liw\core;
 use liw\core\web\Request;
 use liw\core\validation\Is;
 
+/**
+ * Class Router
+ * @package liw\core
+ * Принимает обработанный маршрут $route и массив разрешенных роутов.
+ * Возвращает выполняемый контроллер и метод, массив передаваемых в них параметров
+ */
 class Router
 {
     /**
@@ -11,6 +17,10 @@ class Router
      * @var array
      */
     static public $way;
+
+    static private $rv = [
+        'd' => '#^[0-9]+$#'
+    ];
 
     static public function getWay($route, $ways){
         if (isset($ways[$route])){
@@ -30,6 +40,32 @@ class Router
         } else {
             throw new \Exception("No route: " . $route);
         }
+    }
+
+    static private function getRegFromRoute()
+    {
+        $arr = explode('/', $route);
+        $fragment = array_shift($arr);
+        while($fragment){
+            $length = mb_strlen($fragment, "UTF-8");
+            strncasecmp ($fragment, $ways[0], $length);
+            $fragment = array_shift($arr);
+        }
+    }
+
+    static public function createRegV($route) //strncasecmp
+    {
+        $arr = explode('/', $route);
+        for ($i=0; $i<count($arr); $i++){
+            if ($arr[$i][0] === "{"){
+                if($arr[$i][1] === ":"){
+                    $arr[$i] = self::$rv[mb_substr($arr[$i], 2, mb_strlen($arr[$i]) - 3)];
+                } else {
+                    $arr[$i] = mb_substr($arr[$i], 1, mb_strlen($arr[$i]) - 2);
+                }
+            }
+        }
+        return implode($arr);
     }
 
     static public function run(){
