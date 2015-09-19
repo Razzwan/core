@@ -2,7 +2,6 @@
 namespace liw\core;
 
 use liw\core\web\Request;
-use liw\core\validation\Is;
 
 /**
  * Class Router
@@ -75,7 +74,7 @@ class Router
 
             }
         }
-        throw new \Exception("Нет такого маршрута: " . $route);
+        throw new \Exception(Lang::uage('error_no_route') . $route);
     }
 
     /**
@@ -114,7 +113,7 @@ class Router
     }
 
     static public function run(){
-        $way_arr = explode(':', self::$way[0]);
+        $way_arr = explode('::', self::$way[0]);
         $controller_route = '\web\controllers\\' . $way_arr[0] . 'Controller';
         if (!class_exists($controller_route)) {
             throw new \Exception(Lang::uage('error_no_controller') . $way_arr[0] . 'Controller');
