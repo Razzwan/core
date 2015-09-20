@@ -13,29 +13,31 @@ class App
      * @param null|string $lang
      * @throws \Exception
      */
-    static private function loadLanguage($lang = null)
+    static private function checkLanguage($lang = null)
     {
         if($lang !== null){
-            $file = LIW_WEB . 'config/languages/' . $lang . '.php';
+            $file = LIW_WEB . 'config/languages/' . $lang . '/' . $lang . '.php';
             if(file_exists($file)){
                 $_SESSION['language'] = $lang;
-                Liw::$lang = require $file;
+                Lang::add(require $file);
                 return;
             } else {
-                throw new \Exception("File " . $file . " not exist.");
+                throw new \Exception("Файл " . $file . " не существует.");
             }
         }
 
         if(!empty($_SESSION['language'])){
-            $file = LIW_WEB . 'config/languages/' . $_SESSION['language'] . '.php';
+            $lang = $_SESSION['language'];
+            $file = LIW_WEB . 'config/languages/' . $lang . '/' . $lang . '.php';
             if(file_exists($file)){
-                Liw::$lang = require $file;
+                Lang::add(require $file);
                 return;
             }
         }
         if(isset($_SESSION['language'])) unset($_SESSION['language']);
-        $file = LIW_WEB . 'config/languages/' . Liw::$config['def_lang'] . '.php';
-        Liw::$lang = require $file;
+        $lang = Liw::$config['def_lang'];
+        $file = LIW_WEB . 'config/languages/' . $lang . '/' . $lang . '.php';
+        Lang::add(require $file);
     }
 
     /**
@@ -50,7 +52,7 @@ class App
 
             Request::getRequest();
 
-            self::loadLanguage(Request::$lang);
+            self::checkLanguage(Request::$lang);
 
             Router::getWay(Request::$route, AccessMulti::getWays());
 
@@ -75,7 +77,7 @@ class App
         if (!defined('DEVELOP') || !DEVELOP){
             //добавить логирование
             $view->render('main', 'error', [
-                'error' => Liw::$lang['message']['error']
+                'error' => Lang::uage('error_404')
             ]);
         } else {
             $view->render('main', 'error', [
