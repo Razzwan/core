@@ -75,7 +75,7 @@ class App
     static public function show_errors($errno, $errstr, $file, $line)
     {
         $message = 'Error level: ' . $errno . '<hr>' . $errstr . '<hr>' . $file . '<hr>string: ' . $line . '<hr>';
-        $view = View::getView();
+        $view = (new View)->getView();
         if (!defined('DEVELOP') || !DEVELOP){
             //добавить логирование
             $view->render('main', 'error', [

@@ -41,7 +41,7 @@ class ErrorHandler
     {
         $message = '<b>' . $this->errors[$errno] . "</b> [$errno]<hr>" . $errstr . '<hr> file: ' . $file . '<hr> line: ' . $line . '<hr>';
         self::insertErrorInLogs($errno, $errstr, $file, $line);
-        $view = View::getView();
+        $view = (new View())->getView();
         if (!defined('DEVELOP') || !DEVELOP){
             $view->showError(Lang::uage('error_404'));
         } else {

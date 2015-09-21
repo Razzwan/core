@@ -88,9 +88,11 @@ class Request
                     self::$route = str_replace('/'.$language, '', self::$route); //вырезаем из route язык, чтоб не мешался
                     self::$lang = $language;
                     if (self::$route == '') self::$route = '/';
+                    return;
                 }
             }
         }
+        self::$lang = Liw::$config['def_lang'];
     }
 
     static private function getGet()

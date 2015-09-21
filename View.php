@@ -54,6 +54,11 @@ class View
     public $title = '';
 
     /**
+     * @var string язык
+     */
+    public $language;
+
+    /**
      * Массив значений, переданый в вид
      * @var array
      */
@@ -62,9 +67,10 @@ class View
     /**
      * Устанавливает название (title) документа по умалчанию
      */
-    private function __construct()
+    private function setVariables()
     {
         $this->title = Liw::$config['site_name'];
+        $this->language = Request::$lang;
     }
 
     /**
@@ -72,19 +78,30 @@ class View
      */
     private function __clone(){}
 
-    public static function getView($layout = null)
+    public function getView($layout = null)
     {
+        $this->setVariables();
+
         if (null === self::$_view) {
             self::$_view = new self();
-            /**
-             * определяем текущий вид (лэйаут)
-             */
-            if($layout === null){
-                self::$layout = Liw::$config['def_layout'];
-            } else {
-                self::$layout = $layout;
-            }
         }
+
+        /**
+         * определяем текущий вид (лэйаут)
+         */
+        if($layout === null){
+            if(Liw::$config['def_layout'] !== null){
+                self::$layout = LIW_WEB . 'views/layouts/' . Liw::$config['def_layout'] . '.php';
+            } else {
+                $this->view = Lang::uage('def_layout_not_exist');
+                require_once LIW_CORE . 'core/error/view/index.php';
+                exit;
+            }
+
+        } else {
+            self::$layout = LIW_WEB . 'views/layouts/' . $layout . '.php';
+        }
+
         return self::$_view;
     }
 
@@ -131,7 +148,7 @@ class View
          * нужен особый вывод ошибок, т.к. ошибка в лэйауте будет выводиться дважды, как обычная ошибка, и как ошибка
          * внутри вывода ошибки.
          */
-        require_once LIW_WEB . 'views/layouts/' . self::$layout. '.php'; //подключение layout
+        require_once self::$layout; //подключение layout
     }
 
     /**

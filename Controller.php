@@ -11,7 +11,12 @@ class Controller
      */
     public function render($view, $attributes = null)
     {
-        View::getView(isset($this->layout)?$this->layout:null)->render($this->getClassFromPath(), $view, $attributes);
+        try{
+            (new View)->getView(isset($this->layout)?$this->layout:null)->render($this->getClassFromPath(), $view, $attributes);
+        } catch(\Exception $e){
+            (new ErrorHandler())->showError($e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
+        }
+
     }
 
     /**
@@ -22,7 +27,7 @@ class Controller
      */
     public function redirect($action, $attr = null){
         if(is_array($action)){
-            View::getView()->render($action[0],$action[1], $attr);
+            (new View)->getView()->render($action[0],$action[1], $attr);
             return;
         }
         header('Location: ' . $action);
@@ -44,7 +49,7 @@ class Controller
 
     public function twig($view, $attr = [])
     {
-        View::getView(isset($this->layout)?$this->layout:null)->twig($this->getClassFromPath(), $view, $attr);
+        (new View)->getView(isset($this->layout)?$this->layout:null)->twig($this->getClassFromPath(), $view, $attr);
     }
 
 }
