@@ -44,12 +44,10 @@ class App
      * Загружаем все необходимые данные и запускаем выполнение метода контроллера
      */
     static public function start(){
-        //set_error_handler("self::show_errors"); // изменение отображения ошибок по умолчанию
-        ErrorHandler::init();
         Liw::$config = require_once LIW_WEB . 'config/config.php';
-        echo $a;
-        echo 'прошли дальше, а че нам!';
-        exit;
+
+        (new ErrorHandler)->register();
+
         try {
 
             Session::start();
@@ -85,7 +83,7 @@ class App
             ]);
         } else {
             $view->render('main', 'error', [
-                'error' => $message . 'aaa'
+                'error' => $message
             ]);
         }
         exit;

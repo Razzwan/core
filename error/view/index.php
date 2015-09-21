@@ -29,10 +29,10 @@
 
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
-        <div id="navbar" class="navbar-collapse collapse">
+        <div id="navbar" class="navbar-collapse">
             <div class="navbar-form navbar-right">
                 <div class="form-group">
-                    <a href="/logout" class="btn btn-success">Вернуться на главную</a>
+                    <a href="/" class="btn btn-success">Вернуться на главную</a>
                 </div>
             </div>
         </div><!--/.navbar-collapse -->
@@ -40,7 +40,9 @@
 </nav>
 
 <div id="main_wrapper">
-    <?=$this->view;?>
+    <div class="error">
+        <?=$this->view;?>
+    </div>
 </div>
 
 <footer>
