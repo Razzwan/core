@@ -3,7 +3,7 @@ namespace liw\core\validation;
 
 use liw\core\Lang;
 
-trait Validation {
+trait Validator {
     /**
      * Все переменные модели хранятся здесь
      * @var array
@@ -25,7 +25,8 @@ trait Validation {
     public $error = false;
 
     /**
-     * Хранит правила, по которым происходит верификация
+     * Хранит правила, по которым происходит валидация
+     * ключ - валидируемое поле, значение - массив правил
      * @inheritdoc
      */
     public function rules()
