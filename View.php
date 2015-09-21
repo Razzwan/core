@@ -46,17 +46,17 @@ class View
      */
     static private $layout;
 
-    /**
-     * задается <title>
-     *
-     * @var string
-     */
-    public $title = '';
+    private $var = [];
 
-    /**
-     * @var string язык
-     */
-    public $language;
+    public function __set($var, $value)
+    {
+        $this->var[$var] = $value;
+    }
+
+    public function __get($var)
+    {
+        return $this->var[$var];
+    }
 
     /**
      * Массив значений, переданый в вид
@@ -80,8 +80,6 @@ class View
 
     public function getView($layout = null)
     {
-        $this->setVariables();
-
         if (null === self::$_view) {
             self::$_view = new self();
         }
@@ -144,6 +142,7 @@ class View
             return;
         }
         $this->view =  ob_get_clean();
+        $this->setVariables();
         /**
          * нужен особый вывод ошибок, т.к. ошибка в лэйауте будет выводиться дважды, как обычная ошибка, и как ошибка
          * внутри вывода ошибки.
