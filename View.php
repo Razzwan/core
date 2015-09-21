@@ -131,7 +131,7 @@ class View
          * нужен особый вывод ошибок, т.к. ошибка в лэйауте будет выводиться дважды, как обычная ошибка, и как ошибка
          * внутри вывода ошибки.
          */
-        require LIW_WEB . 'views/layouts/' . self::$layout. '.php'; //подключение layout
+        require_once LIW_WEB . 'views/layouts/' . self::$layout. '.php'; //подключение layout
     }
 
     /**
@@ -154,6 +154,12 @@ class View
             ob_end_clean();
             throw new \Exception('File: ' . $this->view_path . ' not exist!');
         }
+    }
+
+    public function showError($error)
+    {
+        $this->view = $error;
+        require_once LIW_CORE . 'core/error/view/index.php';
     }
 
     public function twig($folder, $view, $attr = [])

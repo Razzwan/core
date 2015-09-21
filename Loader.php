@@ -146,7 +146,7 @@ class Loader
                 require_once LIW_CORE . 'core/develop/Dev.php';
                 Dev::$dev['classes'][] = $file;
             }
-            require $file;
+            require_once $file;
             return true;
         }
         return false;
