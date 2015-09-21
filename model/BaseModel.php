@@ -1,7 +1,6 @@
 <?php
 namespace liw\core\model;
 
-use liw\core\Lang;
 use liw\core\validation\Validation;
 use liw\core\web\Session;
 
@@ -19,9 +18,7 @@ class BaseModel
     {
         if (!empty($_POST)){
             foreach($_POST as $key => $value){
-                if(in_array($key, array_keys($this->rules()))){
-                     $this->fields[$key] = $value;
-                }
+                $this->fields[$key] = $value;
                 if($key == 'captcha'){
                     if(isset($_SESSION['phrase']) && $value == $_SESSION['phrase']){
                         Session::delete('phrase');
