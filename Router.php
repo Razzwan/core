@@ -105,6 +105,7 @@ class Router
 
     static public function createRegV($route) //strncasecmp
     {
+        self::$var_positions = [];
         $arr = explode('/', $route);
         for ($i=0; $i<count($arr); $i++){
             if (mb_substr($arr[$i], 0, 1, "UTF-8") === "{"){

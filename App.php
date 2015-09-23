@@ -8,6 +8,8 @@ use liw\core\web\Session;
 
 class App
 {
+    static private $errorHandler;
+
     /**
      * Загружаем язык
      * @param null|string $lang
@@ -46,7 +48,7 @@ class App
     static public function start(){
         Liw::$config = require_once LIW_WEB . 'config/config.php';
 
-        (new ErrorHandler)->register();
+        ErrorHandler::register();
 
         try {
 
@@ -74,7 +76,8 @@ class App
      */
     static public function show_errors($errno, $errstr, $file, $line)
     {
-        $message = 'Error level: ' . $errno . '<hr>' . $errstr . '<hr>' . $file . '<hr>string: ' . $line . '<hr>';
+        $message = "<b>Exception</b><hr>" . $errstr . '<hr>' . $file . '<hr>string: ' . $line . '<hr>';
+
         $view = (new View)->getView();
         if (!defined('DEVELOP') || !DEVELOP){
             //добавить логирование

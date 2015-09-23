@@ -175,6 +175,10 @@ class View
     public function showError($error)
     {
         $this->view = $error;
+        if(Request::isAjax()){
+            echo '<div class="error">' . $error . '</div>';
+            return;
+        }
         require_once LIW_CORE . 'core/error/view/index.php';
     }
 
