@@ -49,7 +49,7 @@ class App
         (new ErrorHandler)->register();
 
         try {
-
+            fasdfasdf();
             Session::start();
 
             Request::getRequest();

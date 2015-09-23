@@ -14,55 +14,61 @@
 
     <!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
-
-    <link rel="stylesheet" type="text/css" media="screen" href="/css/dev.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="/css/site.css" />
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
 </head>
 
 <body>
+    <style>
+        @font-face {
+            font-family: "Open Sans";
+            src: url(/fonts/OpenSans.ttf);
+        }
+        html,
+        body {
+            display: table;
+            font-family: "Open Sans", sans-serif;
+            font-size: 14px;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+        #main_wrapper {
+            margin-top: 75px;
+            text-align: center;
+        }
+        @media (min-width: 920px) {
+            #main_wrapper {
+                display: table-cell;
+                vertical-align: middle;
+            }
+            .jumbotron {
+                text-align: center;
+                display: inline-block;
+            }
+        }
 
-<nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
-        <div id="navbar" class="navbar-collapse">
-            <div class="navbar-form navbar-right">
-                <div class="form-group">
-                    <a href="/" class="btn btn-success">Вернуться на главную</a>
+    </style>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div id="navbar" class="navbar-collapse">
+                <div class="navbar-form navbar-right">
+                    <div class="form-group">
+                        <a href="/" class="btn btn-success">Вернуться на главную</a>
+                    </div>
                 </div>
-            </div>
-        </div><!--/.navbar-collapse -->
+            </div><!--/.navbar-collapse -->
+        </div>
+    </nav>
+
+    <div id="main_wrapper">
+        <div class="jumbotron alert alert-danger">
+            <?=$this->view;?>
+        </div>
     </div>
-</nav>
 
-<div id="main_wrapper">
-    <div class="error">
-        <?=$this->view;?>
-    </div>
-</div>
+    <script src="/js/jquery.min.js" type="text/javascript" ></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/dev.js" type="text/javascript" ></script>
 
-<footer>
-    <p>&copy; Razzwan <span class="logo">LIW</span> 2015</p>
-</footer>
-
-
-<div id="tooltip"></div>
-
-
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="/js/jquery.js" type="text/javascript" ></script>
-<script src="/js/bootstrap.min.js"></script>
-<script src="/js/jquery-ui.min.js" type="text/javascript" ></script>
-<script src="/js/dev.js" type="text/javascript" ></script>
-<script src="/js/js.js" type="text/javascript" ></script>
-<script src="/js/captcha.js" type="text/javascript" ></script>
-
-<div id="develop_button">Time:<?=' ' . sprintf("%G",(sprintf("%d", (microtime(true)-$_SERVER["REQUEST_TIME_FLOAT"])*100000))/100) . 'ms';?></div>
 </body>
 </html>

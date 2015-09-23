@@ -10,7 +10,7 @@ class Model extends BaseModel
      * Объект подключения к базе данных
      * @var Connect|object
      */
-    private $bd;
+    private $_bd;
 
     /**
      * @var string название таблицы в БД, с которой работаем
@@ -21,18 +21,18 @@ class Model extends BaseModel
      * Заброс к БД
      * @var string
      */
-    private $sql;
+    private $_sql;
 
     /**
      * Параметры которые нужно забиндить к запросу к БД
      * @var array
      */
-    private $bind_param = [];
+    private $_bind_param = [];
 
     /**
      * @var string
      */
-    private $type_param = '';
+    private $_type_param = '';
 
     public function __get($var)
     {
@@ -68,18 +68,18 @@ class Model extends BaseModel
      */
     public function connect()
     {
-        $this->bd = Connect::getConnection();
+        $this->_bd = Connect::getConnection();
     }
 
     public function query($sql, $bind_param = [])
     {
         $this->connect();
-        $this->sql = $sql;
-        $this->bind_param = [];
-        $this->type_param = '';
+        $this->_sql = $sql;
+        $this->_bind_param = [];
+        $this->_type_param = '';
         if(!empty($bind_param)){
             foreach ($bind_param as $key=>$value){
-                array_push($this->bind_param, $value);
+                array_push($this->_bind_param, $value);
                 $this->valueToChar($value, 'QUERY');
             }
         }
@@ -95,7 +95,7 @@ class Model extends BaseModel
     {
         $this->connect();
         //$this->echo_all();
-        return $this->id = $this->bd->push($this->sql, $this->type_param, $this->bind_param);
+        return $this->id = $this->_bd->push($this->_sql, $this->_type_param, $this->_bind_param);
     }
 
     /**
@@ -109,7 +109,7 @@ class Model extends BaseModel
     {
         $this->connect();
         //$this->echo_all();
-        $result = $this->bd->get($this->sql, $this->type_param, $this->bind_param);
+        $result = $this->_bd->get($this->_sql, $this->_type_param, $this->_bind_param);
         $num_rows = $result->num_rows;
         if($num_rows == 0){
             return 0;
@@ -134,17 +134,17 @@ class Model extends BaseModel
      */
     public function select($array = null)
     {
-        $this->sql = "SELECT";
+        $this->_sql = "SELECT";
         if(is_array($array)){
             foreach ($array as $value){
-                $this->sql .= " `" . $value . "`,";
+                $this->_sql .= " `" . $value . "`,";
             }
-            $this->sql = substr($this->sql, 0, -1);
+            $this->_sql = substr($this->_sql, 0, -1);
         } else {
-            $this->sql .= " *";
+            $this->_sql .= " *";
         }
 
-        $this->sql .= " FROM `" . $this->table . "`";
+        $this->_sql .= " FROM `" . $this->table . "`";
         return $this;
     }
 
@@ -157,13 +157,13 @@ class Model extends BaseModel
     public function where($array)
     {
         if(is_array($array)){
-            $this->sql .= " WHERE";
+            $this->_sql .= " WHERE";
             foreach ($array as $key => $value){
-                $this->sql .= " `" . $key . "` = ? and";
-                array_push($this->bind_param, $value);
+                $this->_sql .= " `" . $key . "` = ? and";
+                array_push($this->_bind_param, $value);
                 $this->valueToChar($value, 'WHERE');
             }
-            $this->sql = substr($this->sql, 0, -4);
+            $this->_sql = substr($this->_sql, 0, -4);
         }
         return $this;
     }
@@ -176,18 +176,18 @@ class Model extends BaseModel
      */
     public function insert ($array)
     {
-        $this->type_param = '';
-        $this->bind_param = [];
-        $this->sql = "INSERT INTO `" . $this->table . "`(";
+        $this->_type_param = '';
+        $this->_bind_param = [];
+        $this->_sql = "INSERT INTO `" . $this->table . "`(";
         if(is_array($array)){
             foreach ($array as $value){
-                $this->sql .= $value . ", ";
+                $this->_sql .= $value . ", ";
             }
-            $this->sql = substr($this->sql, 0, -2);
-            $this->sql .= ") VALUES (";
+            $this->_sql = substr($this->_sql, 0, -2);
+            $this->_sql .= ") VALUES (";
             $this->arrToStrTypes($array, '?, ', 'INSERT');
-            $this->sql = substr($this->sql, 0, -2);
-            $this->sql .= ")";
+            $this->_sql = substr($this->_sql, 0, -2);
+            $this->_sql .= ")";
 
         } else {
             /*throw new \Exception(
@@ -206,14 +206,14 @@ class Model extends BaseModel
      */
     public function update($array)
     {
-        $this->type_param = '';
-        $this->bind_param = [];
-        $this->sql = "UPDATE `" . $this->table . "` SET ";
+        $this->_type_param = '';
+        $this->_bind_param = [];
+        $this->_sql = "UPDATE `" . $this->table . "` SET ";
         if(is_array($array)){
             foreach ($array as $value){
-                $this->sql .= $value . " = ?, ";
+                $this->_sql .= $value . " = ?, ";
             }
-            $this->sql = substr($this->sql, 0, -2);
+            $this->_sql = substr($this->_sql, 0, -2);
             $this->arrToStrTypes($array, '', 'UPDATE');
         } else {
             throw new \Exception(
@@ -225,9 +225,9 @@ class Model extends BaseModel
 
     public function delete()
     {
-        $this->type_param = '';
-        $this->bind_param = [];
-        $this->sql = "DELETE FROM `" . $this->table . "`";
+        $this->_type_param = '';
+        $this->_bind_param = [];
+        $this->_sql = "DELETE FROM `" . $this->table . "`";
         return $this;
     }
 
@@ -238,7 +238,7 @@ class Model extends BaseModel
      */
     public function order($field, $desc = false)
     {
-        $desc ? $this->sql .= ' ORDER BY `' . $field . '` ' . $desc : $this->sql .= ' ORDER BY ' . $field;
+        $desc ? $this->_sql .= ' ORDER BY `' . $field . '` ' . $desc : $this->_sql .= ' ORDER BY ' . $field;
         return $this;
     }
 
@@ -248,7 +248,7 @@ class Model extends BaseModel
      */
     public function limit($int = 5)
     {
-        $this->sql .= ' LIMIT ' . $int;
+        $this->_sql .= ' LIMIT ' . $int;
         return $this;
     }
 
@@ -269,12 +269,22 @@ class Model extends BaseModel
             }
 
             $arr = array_unique(array_merge($arr, array_keys($this->fields)));
-            if($this->validate() && ($id = $this->insert($arr)->push())){
-                if($id!==true) $this->fields['id'] = $id;
-                return true;
-            }else{
-                return false;
+            if (method_exists($this, 'validate')){
+                if ($this->validate() && ($id = $this->insert($arr)->push())) {
+                    if($id!==true) $this->fields['id'] = $id;
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                if (($id = $this->insert($arr)->push())) {
+                    if($id!==true) $this->fields['id'] = $id;
+                    return true;
+                } else {
+                    return false;
+                }
             }
+
         } else {
             //throw new \Exception('No date to save!');
             //добавить логирование
@@ -304,13 +314,13 @@ class Model extends BaseModel
     private function valueToChar($value, $method)
     {
         switch (gettype($value)){
-            case 'boolean' : $this->type_param .= 'i';
+            case 'boolean' : $this->_type_param .= 'i';
                 break;
-            case 'integer' : $this->type_param .= 'i';
+            case 'integer' : $this->_type_param .= 'i';
                 break;
-            case 'double' : $this->type_param .= 'd';
+            case 'double' : $this->_type_param .= 'd';
                 break;
-            case 'string' : $this->type_param .= 's';
+            case 'string' : $this->_type_param .= 's';
                 break;
             default:
                 throw new \Exception(
@@ -328,8 +338,8 @@ class Model extends BaseModel
     private function arrToStrTypes($array, $part_sql = '', $method)
     {
         foreach ($array as $value){
-            $this->sql .= $part_sql;
-            array_push($this->bind_param, $this->fields[$value]);
+            $this->_sql .= $part_sql;
+            array_push($this->_bind_param, $this->fields[$value]);
             $this->valueToChar($value, $method);
         }
     }
@@ -340,15 +350,15 @@ class Model extends BaseModel
         echo '<br><br>';
 
         echo 'bind_param: ';
-        var_dump($this->bind_param);
+        var_dump($this->_bind_param);
         echo '<br><br>';
 
         echo 'type_param: ';
-        var_dump($this->type_param);
+        var_dump($this->_type_param);
         echo '<br><br>';
 
         echo 'sql: ';
-        echo $this->sql;
+        echo $this->_sql;
         echo '<br><br>';
         exit;
     }
