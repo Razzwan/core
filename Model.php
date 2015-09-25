@@ -2,13 +2,13 @@
 namespace liw\core;
 
 use liw\core\model\BaseModel;
-use liw\core\model\Connect;
+use liw\core\model\connect\ConnectMysqli;
 
 class Model extends BaseModel
 {
     /**
      * Объект подключения к базе данных
-     * @var Connect|object
+     * @var ConnectMysqli|object
      */
     private $_bd;
 
@@ -46,7 +46,7 @@ class Model extends BaseModel
      */
     public function __construct()
     {
-        $this->_table = Liw::$config['prefix'] . $this->table;
+        $this->_table = Liw::$config['db']['prefix'] . $this->table;
     }
 
     public function __get($var)
@@ -83,7 +83,7 @@ class Model extends BaseModel
      */
     public function connect()
     {
-        $this->_bd = Connect::getConnection();
+        $this->_bd = ConnectMysqli::getConnection();
     }
 
     public function query($sql, $bind_param = [])
