@@ -11,6 +11,10 @@ class Controller
      */
     public function render($view, $attributes = null)
     {
+        if(is_object($attributes)){
+            $attributes = $attributes->fields;
+        }
+
         try{
             (new View)->getView(isset($this->layout)?$this->layout:null)->render($this->getClassFromPath(), $view, $attributes);
         } catch(\Exception $e){
