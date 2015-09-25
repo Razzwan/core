@@ -82,7 +82,7 @@ class Menu
      */
     static private function isActive($url)
     {
-        if($url == Request::$route){
+        if($url == Request::$route || $url == Request::$route . 's'){
             return "active";
         }
         return '';
