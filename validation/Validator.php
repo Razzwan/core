@@ -50,35 +50,4 @@ trait Validator {
         }
     }
 
-    /**
-     * Если была ошибка, то в поле $this->error заполнится здесь
-     * @return bool true, если валидация пройдена и false в противном случае
-     */
-    /*public function validate(){
-        foreach ($this->rules() as $field => $arrRules){
-            if(in_array($field, array_keys($this->fields))){
-                foreach($arrRules as $key => $value){
-                    if(is_int($value)){
-                        if(($error = call_user_func('liw\core\validation\Is::' . $key, $this->fields[$field], $value)) !== true){
-                            $this->error = Lang::uage('error_field') . $this->getLabel($field) . Lang::uage('error_'.$error) . $value;
-                            return false;
-                        }
-                    }else{
-                        if(method_exists($this, $value)){
-                            if(($error = call_user_func([$this, $value], $field, $this->fields[$field])) !== true){
-                                $this->error = Lang::uage('error_field') . $this->getLabel($field) . Lang::uage('error_'.$error);
-                                return false;
-                            }
-                        }else{
-                            if(($error = call_user_func('liw\core\validation\Is::' .  $value, $this->fields[$field])) !== true){
-                                $this->error = Lang::uage('error_field') . $this->getLabel($field) . Lang::uage('error_'. $error);
-                                return false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return true;
-    }*/
 }

@@ -1,8 +1,14 @@
 <?php
-namespace liw\core\model;
+namespace liw\core;
+
+use liw\core\model\BaseModel;
+use liw\core\validation\Validator;
+use liw\core\web\Session;
 
 class Form extends BaseModel
 {
+    use Validator;
+
     /**
      * Сохраняет переменные из массива $_POST в $this->fields, затем проверяет на соответсвтие правилам rules
      *

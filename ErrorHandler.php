@@ -24,7 +24,7 @@ class ErrorHandler
         if(array_key_exists($error, $errors)){
             return $errors[$error];
         } else {
-            return 'Exception';
+            return 'Error[' . $error . ']';
         }
     }
 
@@ -70,11 +70,11 @@ class ErrorHandler
 
     }
 
-    static private function insertErrorInLogs($errno, $errstr, $file, $line)
+    static public function insertErrorInLogs($errno, $errstr, $error_file, $line)
     {
         $file = LIW_WEB . "logs/errors.log";
         $lines = file($file);
-        $lines[sizeof($lines)] = date("d.m.Y H:i:s ") . "Error: " . self::errors($errno) . " [$errno]. " . $errstr . '. File: ' . $file . '. Line: ' . $line . ".\n";
+        $lines[sizeof($lines)] = date("d.m.Y H:i:s ") . "Error: " . self::errors($errno) . " [$errno]. " . $errstr . '. File: ' . $error_file . '. Line: ' . $line . ".\n";
         file_put_contents($file, implode("", $lines));
     }
 

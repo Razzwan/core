@@ -1,10 +1,11 @@
 <?php
-namespace liw\core\model;
+namespace liw\core\model\connect;
 
 use liw\core\develop\Dev;
+use liw\core\ErrorHandler;
 use liw\core\Liw;
 
-class Connect
+class ConnectMysqli
 {
     /**
      * @var object
@@ -81,7 +82,7 @@ class Connect
                 (($result = $stmt->get_result())===false) or
                 ($stmt->close()===false)
             ){
-                //throw new \Exception("SQL error: " . $stmt->error);
+                ErrorHandler::insertErrorInLogs("DB_ERROR[$stmt->errno]", $stmt->error, 'ConnectMysqli', '85');
                 return false;
             }
 
@@ -114,12 +115,12 @@ class Connect
                 (call_user_func_array([$stmt, 'bind_param'], self::refValues($param)) === FALSE) or
                 ($stmt->execute()===false)
             ){
-                //throw new \Exception("SQL error: " . $stmt->error);
+                ErrorHandler::insertErrorInLogs("DB_ERROR[$stmt->errno]", $stmt->error, 'ConnectMysqli', '85');
                 return false;
             }
             $result = $stmt->insert_id;
             if($stmt->close()===false){
-                //throw new \Exception("SQL error: " . $stmt->error);
+                ErrorHandler::insertErrorInLogs("DB_ERROR[$stmt->errno]", $stmt->error, 'ConnectMysqli', '85');
                 return false;
             }
             return $result?:true;
