@@ -13,9 +13,16 @@ class Model extends BaseModel
     private $_bd;
 
     /**
-     * @var string название таблицы в БД, с которой работаем
+     * название таблицы в БД, с которой работаем (без префикса)
+     * @var string
      */
     protected $table;
+
+    /**
+     * название таблицы в БД, с которой работаем (с префиксом)
+     * @var string
+     */
+    private $_table;
 
     /**
      * Заброс к БД
@@ -33,6 +40,14 @@ class Model extends BaseModel
      * @var string
      */
     private $_type_param = '';
+
+    /**
+     * Добавляем к названию таблицы префикс
+     */
+    public function __construct()
+    {
+        $this->_table = Liw::$config['prefix'] . $this->table;
+    }
 
     public function __get($var)
     {
@@ -144,7 +159,7 @@ class Model extends BaseModel
             $this->_sql .= " *";
         }
 
-        $this->_sql .= " FROM `" . $this->table . "`";
+        $this->_sql .= " FROM `" . $this->_table . "`";
         return $this;
     }
 
@@ -178,7 +193,7 @@ class Model extends BaseModel
     {
         $this->_type_param = '';
         $this->_bind_param = [];
-        $this->_sql = "INSERT INTO `" . $this->table . "`(";
+        $this->_sql = "INSERT INTO `" . $this->_table . "`(";
         if(is_array($array)){
             foreach ($array as $value){
                 $this->_sql .= $value . ", ";
@@ -208,7 +223,7 @@ class Model extends BaseModel
     {
         $this->_type_param = '';
         $this->_bind_param = [];
-        $this->_sql = "UPDATE `" . $this->table . "` SET ";
+        $this->_sql = "UPDATE `" . $this->_table . "` SET ";
         if(is_array($array)){
             foreach ($array as $value){
                 $this->_sql .= $value . " = ?, ";
@@ -227,7 +242,7 @@ class Model extends BaseModel
     {
         $this->_type_param = '';
         $this->_bind_param = [];
-        $this->_sql = "DELETE FROM `" . $this->table . "`";
+        $this->_sql = "DELETE FROM `" . $this->_table . "`";
         return $this;
     }
 
