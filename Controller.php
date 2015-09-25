@@ -30,6 +30,11 @@ class Controller
      * @throws \Exception
      */
     public function redirect($action, $attr = null){
+
+        if(is_object($attr)){
+            $attr = $attr->fields;
+        }
+
         if(is_array($action)){
             (new View)->getView()->render($action[0],$action[1], $attr);
             return;
