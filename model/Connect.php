@@ -44,7 +44,6 @@ class Connect
     }
 
     /**
-     * ����������� ���������� � ������� � ������
      * @param $arr
      * @return array
      */
@@ -83,7 +82,6 @@ class Connect
                 ($stmt->close()===false)
             ){
                 //throw new \Exception("SQL error: " . $stmt->error);
-                //�����������
                 return false;
             }
 
@@ -134,21 +132,15 @@ class Connect
         }
     }
 
-    /**
-     * ������ ������������
-     */
     private function __clone(){}
 
     /**
      * @return Connect |object
      */
     public static function getConnection() {
-        // ��������� ������������ ����������
         if (null === self::$_connection) {
-            // ������� ����� ���������
             self::$_connection = new self();
         }
-        // ���������� ��������� ��� ������������ ���������
         return self::$_connection;
     }
 }
