@@ -57,58 +57,100 @@ class ConnectMysqli implements ConnectInterface
         if(!(null === self::$_connection)) $this->mysqli->close();
     }
 
-    private function simpleQuery($sql, $get_result = true, $get_id = false)
+    private function simpleQuery($sql, $get_insert_id = false)
     {
         if( !($result = $this->mysqli->query($sql)) ){
             ErrorHandler::insertErrorInLogs("DB_ERROR[]", 'Не удалось отправить запрос', 'ConnectMysqli', '92');
             return false;
         }
-        if ($get_result){
-            return $result;
-        }
-        if (!$get_result && $get_id){
+        if ($get_insert_id){
             return $this->mysqli->insert_id;
+        }
+        return $result;
+    }
+
+    /**
+     * @param $sql
+     * @param $param
+     * @param bool|false $get_insert_id
+     * @return bool|int|\mysqli_result
+     */
+    private function prepareQuery($sql, $param, $get_insert_id = false)
+    {
+        $stmt = $this->mysqli->stmt_init();
+        if(
+            (($stmt->prepare($sql)) === false) ||
+            (call_user_func_array([$stmt, 'bind_param'], self::refValues($param)) === false) ||
+            ($stmt->execute() === false) ||
+            (($result = $stmt->get_result()) === false)
+        ){
+            ErrorHandler::insertErrorInLogs("DB_ERROR[$stmt->errno]", $stmt->error, 'ConnectMysqli', '87');
+            return false;
+        }
+        if($get_insert_id){
+            if(($result = $stmt->insert_id) === false){
+                ErrorHandler::insertErrorInLogs("DB_ERROR[$stmt->errno]", $stmt->error, 'ConnectMysqli', '92');
+                return false;
+            }
+        }
+        $stmt->close();
+
+        if(isset($result)){
+            return $result;
         }
         return true;
     }
 
     /**
      * @param $sql
-     * @param $param
-     * @param $get_result
+     * @param array|null $params
      * @param bool|false $get_insert_id
-     * @return bool|int|\mysqli_result
+     * @return bool|int|mixed|\mysqli_result
+     * @throws \Exception
      */
-    private function prepareQuery($sql, $param, $get_result, $get_insert_id = false)
+    public function query($sql, array $params = null, $get_insert_id = false)
     {
-        if( (($stmt = $this->mysqli->stmt_init()) === false) ||
-            (($stmt->prepare($sql)) === false) ||
-            (call_user_func_array([$stmt, 'bind_param'], self::refValues($param)) === false) ||
-            ($stmt->execute() === false)
-        ){
-            ErrorHandler::insertErrorInLogs("DB_ERROR[$stmt->errno]", $stmt->error, 'ConnectMysqli', '79');
-            return false;
+        $params = $this->addTypesParam($params);
+
+        if(defined("DEVELOP") && DEVELOP === true){
+            Dev::$dev['requests'][] = $sql . ' [' . implode(', ', $params) . '] get_id = ' . $get_insert_id;
         }
-        if($get_result){
-            if(($result = $stmt->get_result()) === false){
-                ErrorHandler::insertErrorInLogs("DB_ERROR[$stmt->errno]", $stmt->error, 'ConnectMysqli', '79');
-                return false;
+
+        if(!empty($param)){
+            $result = $this->prepareQuery($sql, $params, $get_insert_id);
+        } else {
+            $result = $this->simpleQuery($sql, $get_insert_id);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $params
+     * @throws \Exception
+     * @return array
+     */
+    private function addTypesParam(array $params)
+    {
+        $type_param = '';
+        foreach($params as $param){
+            switch (gettype($param)){
+                case 'boolean' : $type_param .= 'i';
+                    break;
+                case 'integer' : $type_param .= 'i';
+                    break;
+                case 'double' : $type_param .= 'd';
+                    break;
+                case 'string' : $type_param .= 's';
+                    break;
+                default:
+                    throw new \Exception(
+                        "Ошибка типа данных в конструкции " . $method. ", передан тип данных: " . gettype($value)
+                    );
             }
         }
-        if(!$get_result && $get_insert_id){
-            if(($result = $stmt->insert_id) === false){
-                ErrorHandler::insertErrorInLogs("DB_ERROR[$stmt->errno]", $stmt->error, 'ConnectMysqli', '79');
-                return false;
-            }
-        }
-        if($stmt->close() === false){
-            ErrorHandler::insertErrorInLogs("DB_ERROR[$stmt->errno]", $stmt->error, 'ConnectMysqli', '79');
-            return false;
-        }
-        if(isset($result) && $result){
-            return $result;
-        }
-        return true;
+        return array_unshift($param, $type_param);
+
     }
 
     /**
@@ -126,43 +168,4 @@ class ConnectMysqli implements ConnectInterface
         }
         return $arr;
     }
-
-    /**
-     * @param $sql
-     * @param null $type_param
-     * @param array|null $param
-     * @return bool|\mysqli_result
-     * @throws \Exception
-     */
-    public function get($sql, $type_param = null, array $param = null)
-    {
-        if(!empty($param) && !empty($type_param)){
-            array_unshift($param, $type_param);
-            $result = $this->prepareQuery($sql, $param, true);
-        } else {
-            $result = $this->simpleQuery($sql);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param $sql
-     * @param null $type_param
-     * @param array|null $param
-     * @param $get_id boolean
-     * @return bool|int|mixed
-     */
-    public function push($sql, $type_param = null, array $param = null, $get_id = true)
-    {
-        if(isset($param) && isset($type_param)){
-            array_unshift($param, $type_param);
-            $result = $this->prepareQuery($sql, $param, false, $get_id);
-        } else {
-            $result = $this->simpleQuery($sql, false, $get_id);
-        }
-
-        return $result;
-    }
-
 }

@@ -333,29 +333,6 @@ class Model extends BaseModel
     }
 
     /**
-     * @param $value
-     * @param $method
-     * @throws \Exception
-     */
-    private function valueToChar($value, $method)
-    {
-        switch (gettype($value)){
-            case 'boolean' : $this->_type_param .= 'i';
-                break;
-            case 'integer' : $this->_type_param .= 'i';
-                break;
-            case 'double' : $this->_type_param .= 'd';
-                break;
-            case 'string' : $this->_type_param .= 's';
-                break;
-            default:
-                throw new \Exception(
-                    "Ошибка типа данных в конструкции " . $method. ", передан тип данных: " . gettype($value)
-                );
-        }
-    }
-
-    /**
      * @param $array
      * @param string $part_sql
      * @param $method
