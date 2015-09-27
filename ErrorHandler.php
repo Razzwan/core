@@ -24,7 +24,7 @@ class ErrorHandler
         if(array_key_exists($error, $errors)){
             return $errors[$error];
         } else {
-            return 'Error[' . $error . ']';
+            return $error;
         }
     }
 

@@ -109,8 +109,14 @@ class Model extends BaseModel
     public function push()
     {
         $this->connect();
+        /*print_var($this->_sql, false);
+        print_var($this->_bind_param, false);
+        print_var($this->_type_param);*/
         //$this->echo_all();
-        return $this->id = $this->_bd->push($this->_sql, $this->_type_param, $this->_bind_param);
+        if(($this->id = $this->_bd->push($this->_sql, $this->_type_param, $this->_bind_param)) !== false){
+            return $this->id;
+        }
+        return false;
     }
 
     /**
@@ -125,21 +131,23 @@ class Model extends BaseModel
         $this->connect();
         //$this->echo_all();
         $result = $this->_bd->get($this->_sql, $this->_type_param, $this->_bind_param);
-        $num_rows = $result->num_rows;
-        if($num_rows == 0){
-            return 0;
-        } elseif($num_rows==1){
-            $result = $result->fetch_assoc();
-            array_push($this->fields, $result);
-            return $this->fields = array_merge($this->fields, $result);
-        } else {
-            $i = 0;
-            while($str = $result->fetch_assoc()){
-                $this->fields[$i]=$str;
-                $i++;
+
+        if($result){
+            if($result->num_rows == 1){
+                $result = $result->fetch_assoc();
+                return $this->fields = $result;
+            } else {
+                $i = 0;
+                while($str = $result->fetch_assoc()){
+                    $this->fields[$i]=$str;
+                    $i++;
+                }
+                return $this->fields;
             }
-            return $this->fields;
+        } else {
+            return false;
         }
+
     }
 
     /**
@@ -205,11 +213,7 @@ class Model extends BaseModel
             $this->_sql .= ")";
 
         } else {
-            /*throw new \Exception(
-                "Нет данных для вставки"
-            );*/
-            //Добавить логирование
-            return $this;
+            throw new \Exception(Lang::uage('error_empty_date_to_insert'));
         }
         return $this;
     }
@@ -231,9 +235,7 @@ class Model extends BaseModel
             $this->_sql = substr($this->_sql, 0, -2);
             $this->arrToStrTypes($array, '', 'UPDATE');
         } else {
-            throw new \Exception(
-                "Нет данных для вставки"
-            );
+            throw new \Exception(Lang::uage('error_empty_date_to_update'));
         }
         return $this;
     }
@@ -276,24 +278,22 @@ class Model extends BaseModel
      */
     public function save(){
         if(!empty($this->fields)){
-            $arr = [];
-            foreach($this->rules() as $key => $value){
-                if(in_array('required', $value)){
-                    $arr[] = $key;
-                }
+            if(!empty($this->rules())){
+                $arr_keys = $this->addFieldsFromRooles();
+            } else {
+                $arr_keys = array_keys($this->fields);
             }
 
-            $arr = array_unique(array_merge($arr, array_keys($this->fields)));
             if (method_exists($this, 'validate')){
-                if ($this->validate() && ($id = $this->insert($arr)->push())) {
+                if ($this->validate() && ($id = $this->insert($arr_keys)->push())) {
                     if($id!==true) $this->fields['id'] = $id;
                     return true;
                 } else {
                     return false;
                 }
             } else {
-                if (($id = $this->insert($arr)->push())) {
-                    if($id!==true) $this->fields['id'] = $id;
+                if (($id = $this->insert($arr_keys)->push())) {
+                    if($id!==true) $this->id = $id;
                     return true;
                 } else {
                     return false;
@@ -301,10 +301,21 @@ class Model extends BaseModel
             }
 
         } else {
-            //throw new \Exception('No date to save!');
-            //добавить логирование
+            ErrorHandler::insertErrorInLogs("ERROR_SAVE_MODEL", Lang::uage('error_save_model'), 'liw\core\Model', '309');
             return false;
         }
+    }
+
+    private function addFieldsFromRooles()
+    {
+        $arr_keys = [];
+        foreach($this->rules() as $key => $value){
+            if(in_array('required', $value)){
+                $arr_keys[] = $key;
+            }
+        }
+
+        return array_unique(array_merge($arr_keys, array_keys($this->fields)));
     }
 
 
@@ -357,24 +368,5 @@ class Model extends BaseModel
             array_push($this->_bind_param, $this->fields[$value]);
             $this->valueToChar($value, $method);
         }
-    }
-
-    private function echo_all()
-    {
-        var_dump($this->fields);
-        echo '<br><br>';
-
-        echo 'bind_param: ';
-        var_dump($this->_bind_param);
-        echo '<br><br>';
-
-        echo 'type_param: ';
-        var_dump($this->_type_param);
-        echo '<br><br>';
-
-        echo 'sql: ';
-        echo $this->_sql;
-        echo '<br><br>';
-        exit;
     }
 }

@@ -1,8 +1,36 @@
 <?php
 namespace liw\core;
 
+use liw\core\web\Request;
+
 class Controller
 {
+    /**
+     * Название вызвавшего класса в нижнем регистре (например 'main' для класса liw\web\MainController)
+     * @var $folder string
+     */
+    private $called_class;
+
+    /**
+     * 1. Присваивает название класса, бъект которого создается переменной $folder
+     * в нижнем регистре
+     * из строки "\liw\controllers\MainController" делает "main"
+     * 2. Загружает язык, если есть такой файл в папке languages
+     */
+    public function __construct()
+    {
+        $path = get_class($this);
+        $this->called_class = str_replace('controller', '', substr(strrchr(strtolower($path), "\\"), 1));
+        /**
+         * Загружаем файл языка и добавляем его к переменной Lang::uage()
+         */
+        $file_lang = LIW_LANG . Request::$lang . '/' . $this->called_class . '.php';
+        if(file_exists($file_lang)){
+            Lang::add(require $file_lang);
+        }
+
+    }
+
     /**
      * Запускает генерацию страницы
      * @param $view
@@ -16,7 +44,7 @@ class Controller
         }
 
         try{
-            (new View)->getView(isset($this->layout)?$this->layout:null)->render($this->getClassFromPath(), $view, $attributes);
+            (new View)->getView(isset($this->layout)?$this->layout:null)->render($this->called_class, $view, $attributes);
         } catch(\Exception $e){
             (new ErrorHandler())->showError($e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
         }
@@ -42,23 +70,9 @@ class Controller
         header('Location: ' . $action);
     }
 
-    /**
-     * Возвращает название класса, бъект которого создается
-     * в нижнем регистре
-     * из строки "\liw\controllers\MainController" делает "main"
-     *
-     * @return string нижний регистр
-     */
-    private function getClassFromPath()
-    {
-        $path = get_class($this);
-        $folder = str_replace('controller', '', substr(strrchr(strtolower($path), "\\"), 1));
-        return $folder;
-    }
-
     public function twig($view, $attr = [])
     {
-        (new View)->getView(isset($this->layout)?$this->layout:null)->twig($this->getClassFromPath(), $view, $attr);
+        (new View)->getView(isset($this->layout)?$this->layout:null)->twig($this->called_class, $view, $attr);
     }
 
 }

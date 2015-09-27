@@ -25,8 +25,10 @@ class AccessMulti implements AccessInterface
             $file = LIW_WEB . 'config/ways/guest.php';
             return self::loadFile($file);
         } else {
-            $file = LIW_WEB . 'config/ways/user.php';
-            return array_merge(self::loadFile($file), self::filesFromLevels());
+            $file1 = LIW_WEB . 'config/ways/guest.php';
+            $file2 = LIW_WEB . 'config/ways/user.php';
+            $arr   = array_merge(self::loadFile($file1), self::loadFile($file2));
+            return array_merge($arr, self::filesFromLevels());
         }
 
     }
@@ -53,7 +55,7 @@ class AccessMulti implements AccessInterface
             $arr = [];
 
             for($i=0; $i<count($levels); $i++){
-                Liw::$user['level'][self::$access_names[$i]] = $levels[$i];
+                Liw::setLevel(self::$access_names[$i], $levels[$i]);
                 for ($j=1; $j<=$levels[$i]; $j++){
                     $file = LIW_WEB ."config/ways/" . self::$access_names[$i] . "/" . $j .".php";
                     if(($add_arr = self::loadFile($file))){
