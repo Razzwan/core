@@ -3,6 +3,7 @@ namespace liw\core\model\connect;
 
 use liw\core\develop\Dev;
 use liw\core\ErrorHandler;
+use liw\core\Lang;
 use liw\core\Liw;
 use liw\core\model\connect\ConnectInterface;
 
@@ -49,23 +50,16 @@ class ConnectMysqli implements ConnectInterface
 
     private function __clone(){}
 
-    /**
-     *
-     */
-    public function __destruct()
-    {
-        if(!(null === self::$_connection)) $this->mysqli->close();
-    }
-
     private function simpleQuery($sql, $get_insert_id = false)
     {
         if( !($result = $this->mysqli->query($sql)) ){
-            ErrorHandler::insertErrorInLogs("DB_ERROR[]", 'Не удалось отправить запрос', 'ConnectMysqli', '92');
+            ErrorHandler::insertErrorInLogs("DB_ERROR[]", 'Не удалось отправить запрос', 'liw\core\model\connect\ConnectMysqli', '92');
             return false;
         }
         if ($get_insert_id){
             return $this->mysqli->insert_id;
         }
+        $this->mysqli->close();
         return $result;
     }
 
@@ -84,16 +78,17 @@ class ConnectMysqli implements ConnectInterface
             ($stmt->execute() === false) ||
             (($result = $stmt->get_result()) === false)
         ){
-            ErrorHandler::insertErrorInLogs("DB_ERROR[$stmt->errno]", $stmt->error, 'ConnectMysqli', '87');
+            ErrorHandler::insertErrorInLogs("DB_ERROR[$stmt->errno]", $stmt->error, 'liw\core\model\connect\ConnectMysqli', '87');
             return false;
         }
         if($get_insert_id){
             if(($result = $stmt->insert_id) === false){
-                ErrorHandler::insertErrorInLogs("DB_ERROR[$stmt->errno]", $stmt->error, 'ConnectMysqli', '92');
+                ErrorHandler::insertErrorInLogs("DB_ERROR[$stmt->errno]", $stmt->error, 'liw\core\model\connect\ConnectMysqli', '92');
                 return false;
             }
         }
         $stmt->close();
+        $this->mysqli->close();
 
         if(isset($result)){
             return $result;
@@ -144,9 +139,7 @@ class ConnectMysqli implements ConnectInterface
                 case 'string' : $type_param .= 's';
                     break;
                 default:
-                    throw new \Exception(
-                        "Ошибка типа данных в конструкции " . $method. ", передан тип данных: " . gettype($value)
-                    );
+                    throw new \Exception(Lang::uage('error_data_type') . gettype($param));
             }
         }
         return array_unshift($param, $type_param);
@@ -159,13 +152,9 @@ class ConnectMysqli implements ConnectInterface
      */
     private static function refValues($arr)
     {
-        if (strnatcmp(phpversion(),'5.3') >= 0) //Reference is required for PHP 5.3+
-        {
-            $refs = array();
-            foreach($arr as $key => $value)
-                $refs[$key] = &$arr[$key];
-            return $refs;
-        }
-        return $arr;
+        $refs = [];
+        foreach($arr as $key => $value)
+            $refs[$key] = &$arr[$key];
+        return $refs;
     }
 }
