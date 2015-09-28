@@ -16,7 +16,7 @@ class Model extends BaseModel
      * название таблицы в БД, с которой работаем (без префикса)
      * @var string
      */
-    protected $table;
+    public $table;
 
     /**
      * название таблицы в БД, с которой работаем (с префиксом)
@@ -28,24 +28,22 @@ class Model extends BaseModel
      * Заброс к БД
      * @var string
      */
-    private $_sql;
+    public $_sql;
 
     /**
      * Параметры которые нужно забиндить к запросу к БД
      * @var array
      */
-    private $_bind_param = [];
-
-    /**
-     * @var string
-     */
-    private $_type_param = '';
+    public $_bind_param = [];
 
     /**
      * Добавляем к названию таблицы префикс
      */
     public function __construct()
     {
+        if(empty($this->table)){
+            throw new \Exception(Lang::uage('empty_table_name'));
+        }
         $this->_table = Liw::$config['db']['prefix'] . $this->table;
     }
 
@@ -91,11 +89,9 @@ class Model extends BaseModel
         $this->connect();
         $this->_sql = $sql;
         $this->_bind_param = [];
-        $this->_type_param = '';
         if(!empty($bind_param)){
             foreach ($bind_param as $key=>$value){
                 array_push($this->_bind_param, $value);
-                $this->valueToChar($value, 'QUERY');
             }
         }
         return $this;
@@ -109,14 +105,9 @@ class Model extends BaseModel
     public function push()
     {
         $this->connect();
-        /*print_var($this->_sql, false);
-        print_var($this->_bind_param, false);
-        print_var($this->_type_param);*/
-        //$this->echo_all();
-        if(($this->id = $this->_bd->push($this->_sql, $this->_type_param, $this->_bind_param)) !== false){
-            return $this->id;
-        }
-        return false;
+
+        return $this->_bd->query($this->_sql, !empty($this->_bind_param)?$this->_bind_param:null, true);
+
     }
 
     /**
@@ -129,10 +120,10 @@ class Model extends BaseModel
     public function get()
     {
         $this->connect();
-        //$this->echo_all();
-        $result = $this->_bd->get($this->_sql, $this->_type_param, $this->_bind_param);
 
-        if($result){
+        $result = $this->_bd->query($this->_sql, !empty($this->_bind_param)?$this->_bind_param:null);
+
+        if(is_object($result)){
             if($result->num_rows == 1){
                 $result = $result->fetch_assoc();
                 return $this->fields = $result;
@@ -145,7 +136,7 @@ class Model extends BaseModel
                 return $this->fields;
             }
         } else {
-            return false;
+            return $result;
         }
 
     }
@@ -182,9 +173,8 @@ class Model extends BaseModel
         if(is_array($array)){
             $this->_sql .= " WHERE";
             foreach ($array as $key => $value){
-                $this->_sql .= " `" . $key . "` = ? and";
+                $this->_sql .= " `" . $key . "` = ? AND";
                 array_push($this->_bind_param, $value);
-                $this->valueToChar($value, 'WHERE');
             }
             $this->_sql = substr($this->_sql, 0, -4);
         }
@@ -199,16 +189,18 @@ class Model extends BaseModel
      */
     public function insert ($array)
     {
-        $this->_type_param = '';
         $this->_bind_param = [];
-        $this->_sql = "INSERT INTO `" . $this->_table . "`(";
+        $this->_sql = "INSERT INTO `" . $this->_table . "` (";
         if(is_array($array)){
+            $questions = '';
             foreach ($array as $value){
                 $this->_sql .= $value . ", ";
+                $questions .= '?, ';
+                array_push($this->_bind_param, $this->fields[$value]);
             }
             $this->_sql = substr($this->_sql, 0, -2);
             $this->_sql .= ") VALUES (";
-            $this->arrToStrTypes($array, '?, ', 'INSERT');
+            $this->_sql .= $questions;
             $this->_sql = substr($this->_sql, 0, -2);
             $this->_sql .= ")";
 
@@ -225,15 +217,14 @@ class Model extends BaseModel
      */
     public function update($array)
     {
-        $this->_type_param = '';
         $this->_bind_param = [];
         $this->_sql = "UPDATE `" . $this->_table . "` SET ";
         if(is_array($array)){
             foreach ($array as $value){
-                $this->_sql .= $value . " = ?, ";
+                $this->_sql .= '`' . $value . "` = ?, ";
+                array_push($this->_bind_param, $this->fields[$value]);
             }
             $this->_sql = substr($this->_sql, 0, -2);
-            $this->arrToStrTypes($array, '', 'UPDATE');
         } else {
             throw new \Exception(Lang::uage('error_empty_date_to_update'));
         }
@@ -242,7 +233,6 @@ class Model extends BaseModel
 
     public function delete()
     {
-        $this->_type_param = '';
         $this->_bind_param = [];
         $this->_sql = "DELETE FROM `" . $this->_table . "`";
         return $this;
@@ -255,8 +245,22 @@ class Model extends BaseModel
      */
     public function order($field, $desc = false)
     {
-        $desc ? $this->_sql .= ' ORDER BY `' . $field . '` ' . $desc : $this->_sql .= ' ORDER BY ' . $field;
+        if($desc){
+            $this->_sql .= ' ORDER BY `' . $field . '` ' . 'DESC';
+        } else {
+            $this->_sql .= ' ORDER BY `' . $field . '`';
+        }
         return $this;
+    }
+
+    /**
+     * @param $field
+     * @param bool|false $desc
+     * @return $this
+     */
+    public function orderBy($field, $desc = false)
+    {
+        $this->order($field, $desc);
     }
 
     /**
@@ -265,7 +269,8 @@ class Model extends BaseModel
      */
     public function limit($int = 5)
     {
-        $this->_sql .= ' LIMIT ' . $int;
+        $this->_sql .= ' LIMIT ?';
+        $this->_bind_param[] = $int;
         return $this;
     }
 
@@ -279,7 +284,7 @@ class Model extends BaseModel
     public function save(){
         if(!empty($this->fields)){
             if(!empty($this->rules())){
-                $arr_keys = $this->addFieldsFromRooles();
+                $arr_keys = $this->addFieldsFromRules();
             } else {
                 $arr_keys = array_keys($this->fields);
             }
@@ -306,7 +311,7 @@ class Model extends BaseModel
         }
     }
 
-    private function addFieldsFromRooles()
+    private function addFieldsFromRules()
     {
         $arr_keys = [];
         foreach($this->rules() as $key => $value){
@@ -335,15 +340,13 @@ class Model extends BaseModel
     /**
      * @param $array
      * @param string $part_sql
-     * @param $method
      * @throws \Exception
      */
-    private function arrToStrTypes($array, $part_sql = '', $method)
+    private function arrToStrTypes($array, $part_sql = '')
     {
         foreach ($array as $value){
             $this->_sql .= $part_sql;
             array_push($this->_bind_param, $this->fields[$value]);
-            $this->valueToChar($value, $method);
         }
     }
 }

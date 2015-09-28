@@ -38,6 +38,11 @@ class ConnectMysqli implements ConnectInterface
         $this->mysqli->set_charset('utf8');
     }
 
+    public function __destroy()
+    {
+        $this->mysqli->close();
+    }
+
     /**
      * @return ConnectMysqli |object
      */
@@ -59,22 +64,22 @@ class ConnectMysqli implements ConnectInterface
         if ($get_insert_id){
             return $this->mysqli->insert_id;
         }
-        $this->mysqli->close();
+
         return $result;
     }
 
     /**
      * @param $sql
-     * @param $param
+     * @param $params
      * @param bool|false $get_insert_id
      * @return bool|int|\mysqli_result
      */
-    private function prepareQuery($sql, $param, $get_insert_id = false)
+    private function prepareQuery($sql, $params, $get_insert_id = false)
     {
         $stmt = $this->mysqli->stmt_init();
         if(
             (($stmt->prepare($sql)) === false) ||
-            (call_user_func_array([$stmt, 'bind_param'], self::refValues($param)) === false) ||
+            (call_user_func_array([$stmt, 'bind_param'], self::refValues($params)) === false) ||
             ($stmt->execute() === false) ||
             (($result = $stmt->get_result()) === false)
         ){
@@ -88,7 +93,6 @@ class ConnectMysqli implements ConnectInterface
             }
         }
         $stmt->close();
-        $this->mysqli->close();
 
         if(isset($result)){
             return $result;
@@ -105,16 +109,19 @@ class ConnectMysqli implements ConnectInterface
      */
     public function query($sql, array $params = null, $get_insert_id = false)
     {
-        $params = $this->addTypesParam($params);
-
-        if(defined("DEVELOP") && DEVELOP === true){
-            Dev::$dev['requests'][] = $sql . ' [' . implode(', ', $params) . '] get_id = ' . $get_insert_id;
-        }
-
-        if(!empty($param)){
+        if($params !== null){
+            $params = $this->addTypesToParams($params);
             $result = $this->prepareQuery($sql, $params, $get_insert_id);
         } else {
             $result = $this->simpleQuery($sql, $get_insert_id);
+        }
+
+        if(defined("DEVELOP") && DEVELOP === true){
+            if($params !== null){
+                Dev::$dev['requests'][] = $sql . ' [' . implode(', ', $params) . '] get_id = ' . $get_insert_id;
+            } else {
+                Dev::$dev['requests'][] = $sql . ' get_id = ' . $get_insert_id;
+            }
         }
 
         return $result;
@@ -125,10 +132,10 @@ class ConnectMysqli implements ConnectInterface
      * @throws \Exception
      * @return array
      */
-    private function addTypesParam(array $params)
+    private function addTypesToParams(array $params)
     {
         $type_param = '';
-        foreach($params as $param){
+        foreach($params as $key=>$param){
             switch (gettype($param)){
                 case 'boolean' : $type_param .= 'i';
                     break;
@@ -142,7 +149,8 @@ class ConnectMysqli implements ConnectInterface
                     throw new \Exception(Lang::uage('error_data_type') . gettype($param));
             }
         }
-        return array_unshift($param, $type_param);
+        array_unshift($params, $type_param);
+        return $params;
 
     }
 
@@ -150,7 +158,7 @@ class ConnectMysqli implements ConnectInterface
      * @param $arr
      * @return array
      */
-    private static function refValues($arr)
+    private static function refValues(array $arr)
     {
         $refs = [];
         foreach($arr as $key => $value)

@@ -3,7 +3,7 @@ namespace liw\core;
 
 class ErrorHandler
 {
-    static private function errors($error){
+    static public function errors($error){
         $errors = [
             E_ERROR => 'ERROR',
             E_WARNING => 'WARNING',
