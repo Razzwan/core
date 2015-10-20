@@ -8,8 +8,6 @@ use liw\core\web\Session;
 
 class App
 {
-    static private $errorHandler;
-
     /**
      * Загружаем язык
      * @param null|string $lang
@@ -76,6 +74,7 @@ class App
      */
     static public function show_errors($errno, $errstr, $file, $line)
     {
+        header("HTTP/1.0 404 Not Found");
         $message = "<b>Exception</b><hr>" . $errstr . '<hr>' . $file . '<hr>string: ' . $line . '<hr>';
 
         $view = (new View)->getView();

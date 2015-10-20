@@ -17,20 +17,28 @@ class Form extends BaseModel
      */
     public function post()
     {
-        if (!empty($_POST) && isset($_SESSION['phrase'])){
+        if (isset($_SESSION['phrase'])){
+            if(!empty($_POST)){
+                if(!isset($_POST['captcha']) || $_POST['captcha'] !== $_SESSION['phrase']){
+                    Session::delete('phrase');
+                    $this->error = 'error code';
+                    return false;
+                }
 
-            if($_POST['captcha'] !== $_SESSION['phrase']){
                 Session::delete('phrase');
-                $this->error = 'error code';
-                return false;
+                foreach($_POST as $key => $value){
+                    $this->fields[$key] = $value;
+                }
+
+                return $this->validate(); //возвращает true в случае удачной валидации и false в противном случае
             }
 
-            Session::delete('phrase');
+        } else {
             foreach($_POST as $key => $value){
                 $this->fields[$key] = $value;
             }
 
-            return true;//$this->validate(); //возвращает true в случае удачной валидации и false в противном случае
+            return $this->validate();
         }
         return false;
     }

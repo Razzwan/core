@@ -46,6 +46,7 @@ class ErrorHandler
      */
     static public function showError($errno, $errstr, $file, $line)
     {
+        header("HTTP/1.0 404 Not Found");
         $message = '<b>' . self::errors($errno) . "</b> [$errno]<hr>" . $errstr . '<hr> file: ' . $file . '<hr> line: ' . $line . '<hr>';
         self::insertErrorInLogs($errno, $errstr, $file, $line);
         $view = (new View())->getView();

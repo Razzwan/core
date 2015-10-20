@@ -3,11 +3,11 @@ namespace liw\core;
 
 class Lang
 {
-    static public $_ = array('afd' => '');
+    static private $_ = [];
 
     static public function add($arr)
     {
-        self::$_ = array_merge(self::$_, $arr);
+        self::$_ = array_merge($arr, self::$_);
     }
 
     static public function uage($_)
