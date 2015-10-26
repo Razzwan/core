@@ -3,7 +3,7 @@ namespace liw\core;
 
 class ErrorHandler
 {
-    static public function errors($error){
+    static public function getError($error){
         $errors = [
             E_ERROR => 'ERROR',
             E_WARNING => 'WARNING',
@@ -47,13 +47,18 @@ class ErrorHandler
     static public function showError($errno, $errstr, $file, $line)
     {
         header("HTTP/1.0 404 Not Found");
-        $message = '<b>' . self::errors($errno) . "</b> [$errno]<hr>" . $errstr . '<hr> file: ' . $file . '<hr> line: ' . $line . '<hr>';
+        $message = '<b>' . self::getError($errno) . "</b> [$errno]<hr>" . $errstr . '<hr> file: ' . $file . '<hr> line: ' . $line . '<hr>';
         self::insertErrorInLogs($errno, $errstr, $file, $line);
-        $view = (new View())->getView();
+
+        $view = (new View)->getView();
         if (!defined('DEVELOP') || !DEVELOP){
-            $view->showError(Lang::uage('error_404'));
+            $view->render('main', 'error', [
+                'error' => Lang::uage('error_404')
+            ]);
         } else {
-            $view->showError($message);
+            $view->render('main', 'error', [
+                'error' => $message
+            ]);
         }
         exit;
     }
@@ -75,7 +80,7 @@ class ErrorHandler
     {
         $file = LIW_WEB . "logs/errors.log";
         $lines = file($file);
-        $lines[sizeof($lines)] = date("d.m.Y H:i:s ") . "Error: " . self::errors($errno) . " [$errno]. " . $errstr . '. File: ' . $error_file . '. Line: ' . $line . ".\n";
+        $lines[sizeof($lines)] = date("d.m.Y H:i:s ") . "Error: " . self::getError($errno) . " [$errno]. " . $errstr . '. File: ' . $error_file . '. Line: ' . $line . ".\n";
         file_put_contents($file, implode("", $lines));
     }
 

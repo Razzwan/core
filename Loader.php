@@ -1,8 +1,6 @@
 <?php
 namespace liw\core;
 
-use liw\core\develop\Dev;
-
 class Loader
 {
     /**
@@ -12,8 +10,8 @@ class Loader
      * @var array
      */
     protected $prefixes = [
-        'liw\\' => array(LIW_CORE),
-        'web\\' => array(LIW_WEB),
+        'liw\\' => [LIW_CORE],
+        'app\\' => [LIW_WEB],
     ];
 
     /**
@@ -142,10 +140,6 @@ class Loader
     protected function requireFile($file)
     {
         if (file_exists($file)) {
-            if(defined("DEVELOP") && DEVELOP === true){
-                require_once LIW_CORE . 'core/develop/Dev.php';
-                Dev::$dev['classes'][] = $file;
-            }
             require_once $file;
             return true;
         }

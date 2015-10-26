@@ -32,4 +32,36 @@ class Lang
         }
     }
 
+    /**
+     * Загружаем язык
+     * @param null|string $lang
+     * @throws \Exception
+     */
+    static public function checkLanguage($lang = null)
+    {
+        if($lang !== null){
+            $file = LIW_WEB . 'config/languages/' . $lang . '/' . $lang . '.php';
+            if(file_exists($file)){
+                $_SESSION['language'] = $lang;
+                Lang::add(require $file);
+                return;
+            } else {
+                throw new \Exception("Файл " . $file . " не существует.");
+            }
+        }
+
+        if(!empty($_SESSION['language'])){
+            $lang = $_SESSION['language'];
+            $file = LIW_WEB . 'config/languages/' . $lang . '/' . $lang . '.php';
+            if(file_exists($file)){
+                Lang::add(require $file);
+                return;
+            }
+        }
+        if(isset($_SESSION['language'])) unset($_SESSION['language']);
+        $lang = Liw::$config['def_lang'];
+        $file = LIW_WEB . 'config/languages/' . $lang . '/' . $lang . '.php';
+        Lang::add(require $file);
+    }
+
 }
