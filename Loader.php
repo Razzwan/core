@@ -11,7 +11,7 @@ class Loader
      */
     protected $prefixes = [
         'liw\\' => [LIW_CORE],
-        'app\\' => [LIW_WEB],
+        'web\\' => [LIW_WEB],
     ];
 
     /**
